@@ -1,13 +1,34 @@
 /* eslint-disable react/jsx-no-bind */
 import React, { useState, ChangeEvent } from 'react';
 import { Form, InputGroup } from 'react-bootstrap';
-import { IDisabledComponent } from '../interfaces/IDisabledComponent';
 
-function BuyingTypeInput({ disabled }: IDisabledComponent): React.JSX.Element {
+interface IBuyingTypeInputProps {
+  disabled: boolean;
+  // eslint-disable-next-line no-unused-vars
+  handleInputChange: (id: string, value: string) => void;
+}
+
+function BuyingTypeInput({
+  disabled,
+  handleInputChange,
+}: IBuyingTypeInputProps): React.JSX.Element {
   const [buyMaxAmount, setBuyMaxAmount] = useState(true);
+  const [amountToSpendValue, setAmountToSpendInputValue] = useState('');
+  const [numberOfTokensToBuyValue, setNumberOfTokensToBuyInputValue] = useState('');
 
   function handleRadioChange(event: ChangeEvent<HTMLInputElement>) {
     setBuyMaxAmount(event.target.id === 'max-amount');
+  }
+
+  function handleTypeOfHowToBuyTokens(
+    amountToSpendParam: string,
+    numberOfTokensToBuyParam: string
+  ) {
+    handleInputChange('amountToSpend', amountToSpendParam);
+    handleInputChange('numberOfTokensToBuy', numberOfTokensToBuyParam);
+    // managing values cleaning up
+    setAmountToSpendInputValue(amountToSpendParam);
+    setNumberOfTokensToBuyInputValue(numberOfTokensToBuyParam);
   }
 
   return (
@@ -45,6 +66,8 @@ function BuyingTypeInput({ disabled }: IDisabledComponent): React.JSX.Element {
             <Form.Control
               placeholder="Amount to spend e.g (0.5, 1, 10, 10000 etc.)"
               disabled={disabled}
+              onChange={(e) => handleTypeOfHowToBuyTokens(e.target.value, '')}
+              value={amountToSpendValue}
             />
           </InputGroup>
         ) : (
@@ -57,6 +80,8 @@ function BuyingTypeInput({ disabled }: IDisabledComponent): React.JSX.Element {
             <Form.Control
               placeholder="Number of tokens to buy e.g (0.5, 1, 10, 10000 etc.)"
               disabled={disabled}
+              onChange={(e) => handleTypeOfHowToBuyTokens('', e.target.value)}
+              value={numberOfTokensToBuyValue}
             />
           </InputGroup>
         )}
@@ -69,6 +94,9 @@ function BuyingTypeInput({ disabled }: IDisabledComponent): React.JSX.Element {
           <Form.Control
             placeholder="Max Spending Limit (transaction will fail if exceeds)"
             disabled={disabled}
+            onChange={(e) =>
+              handleInputChange('maxSpendingLimit', e.target.value)
+            }
           />
         </InputGroup>
       </div>

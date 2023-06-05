@@ -4,11 +4,13 @@ import { Alert, Spinner, Button } from 'react-bootstrap';
 interface LogContainerProps {
   showLogs: boolean;
   setShowLogs: React.Dispatch<React.SetStateAction<boolean>>;
+  buyingToken: string;
 }
 
 function LogContainer({
   showLogs,
   setShowLogs,
+  buyingToken,
 }: LogContainerProps): React.JSX.Element {
   return (
     <Alert show={showLogs} variant="primary">
@@ -24,7 +26,7 @@ function LogContainer({
           aria-hidden="true"
         />
       </Alert.Heading>
-      <p>Will buy token(s) as soon as liquidity added!</p>
+      <p>Will buy token(s) for {buyingToken} as soon as liquidity added!</p>
       <hr />
       <p>Checking for liquidity...</p>
       <div className="d-flex justify-content-end">

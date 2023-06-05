@@ -1,22 +1,33 @@
 /* eslint-disable react/jsx-no-bind */
 import React from 'react';
 import { Form, InputGroup } from 'react-bootstrap';
-import { IDisabledComponent } from '../interfaces/IDisabledComponent';
 
-function DefaultInfoInput({ disabled }: IDisabledComponent): React.JSX.Element {
+interface IDefaultInfoInput {
+  disabled: boolean;
+  // eslint-disable-next-line no-unused-vars
+  handleInputChange: (id: string, value: string) => void;
+}
+
+function DefaultInfoInput({
+  disabled,
+  handleInputChange,
+}: IDefaultInfoInput): React.JSX.Element {
   const inputsGeneralData = [
     {
       placeholder: 'Your wallet private key',
       iconclass: 'bi-wallet',
       type: 'password',
+      id: 'password',
     },
     {
       placeholder: 'Your wallet address',
       iconclass: 'bi-wallet',
+      id: 'walletAddress',
     },
     {
       placeholder: 'Token contract to buy',
       iconclass: 'bi-cash-stack',
+      id: 'tokenToBuy',
     },
   ];
 
@@ -34,6 +45,7 @@ function DefaultInfoInput({ disabled }: IDisabledComponent): React.JSX.Element {
             placeholder={inputData.placeholder}
             type={inputData.type}
             disabled={disabled}
+            onChange={(e) => handleInputChange(inputData.id, e.target.value)}
           />
         </InputGroup>
       ))}

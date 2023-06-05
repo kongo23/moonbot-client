@@ -1,13 +1,28 @@
 /* eslint-disable react/jsx-no-bind */
-import React from 'react';
+import React, { useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { IDisabledComponent } from '../interfaces/IDisabledComponent';
 
-function BuyViaSelect({ disabled }: IDisabledComponent): React.JSX.Element {
+interface IBuyViaSelectProps {
+  disabled: boolean;
+  // eslint-disable-next-line no-unused-vars
+  handleInputChange: (id: string, value: string) => void;
+}
+
+function BuyViaSelect({
+  disabled,
+  handleInputChange,
+}: IBuyViaSelectProps): React.JSX.Element {
+  const [selectedToken, setSelectedToken] = useState('');
+
   const buyingTokens = [
     { id: 'bnb', currency: 'BNB', contract: '' },
     { id: 'busd', currency: 'BUSD', contract: '' },
   ];
+
+  function handleSlection(currency: string): void {
+    setSelectedToken(currency);
+    handleInputChange('buyVia', currency);
+  }
 
   return (
     <div className="d-flex">
@@ -19,11 +34,17 @@ function BuyViaSelect({ disabled }: IDisabledComponent): React.JSX.Element {
             id="dropdown-basic"
             disabled={disabled}
           >
-            Buy with
+            {selectedToken || 'Buy with'}
           </Dropdown.Toggle>
           <Dropdown.Menu>
             {buyingTokens.map((token) => (
-              <Dropdown.Item href="#/action-1">{token.currency}</Dropdown.Item>
+              <Dropdown.Item
+                key={token.currency}
+                onClick={() => handleSlection(token.currency)}
+                active={selectedToken === token.currency}
+              >
+                {token.currency}
+              </Dropdown.Item>
             ))}
           </Dropdown.Menu>
         </Dropdown>

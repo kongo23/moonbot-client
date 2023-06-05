@@ -19,6 +19,30 @@ import SlippageOption from './SlippageOption';
 
 function ConfigurationForm() {
   const [showLogs, setShowLogs] = useState(false);
+  const [inputData, setInputData] = useState({
+    walletAddress: '',
+    password: '',
+    tokenToBuy: '',
+    provider: 'PancakeSwap',
+    buyVia: '',
+    amountToSpend: '',
+    numberOfTokensToBuy: '',
+    maxSpendingLimit: '',
+    usingMaxSlippage: 'true',
+  });
+
+  const handleInputChange = (inputName: string, value: string) => {
+    setInputData((prevInputData) => ({
+      ...prevInputData,
+      [inputName]: value,
+    }));
+  };
+
+  const handleStartButton = () => {
+    setShowLogs(true);
+    // eslint-disable-next-line no-console
+    console.log('Input Data:', inputData);
+  };
 
   return (
     <div className="container">
@@ -29,33 +53,52 @@ function ConfigurationForm() {
               MoonBot <i className="bi bi-moon" />
             </h1>
           </div>
-          <SwapProviderSelect disabled={showLogs} />
+          <SwapProviderSelect
+            disabled={showLogs}
+            handleInputChange={handleInputChange}
+          />
         </div>
 
-        <DefaultInfoInput disabled={showLogs} />
+        <DefaultInfoInput
+          disabled={showLogs}
+          handleInputChange={handleInputChange}
+        />
 
-        <BuyingTypeInput disabled={showLogs} />
+        <BuyingTypeInput
+          disabled={showLogs}
+          handleInputChange={handleInputChange}
+        />
 
         <div className="d-flex justify-content-between">
           <div className="d-flex justify-content-start">
-            <BuyViaSelect disabled={showLogs} />
+            <BuyViaSelect
+              disabled={showLogs}
+              handleInputChange={handleInputChange}
+            />
           </div>
           <div className="d-flex justify-content-end">
-            <SlippageOption disabled={showLogs} />
+            <SlippageOption
+              disabled={showLogs}
+              handleInputChange={handleInputChange}
+            />
           </div>
         </div>
 
         <Button
           className="start-button"
           variant="primary"
-          onClick={() => setShowLogs(true)}
+          onClick={() => handleStartButton()}
           disabled={showLogs}
         >
           Start Bot <i className="bi bi-rocket-takeoff" />
         </Button>
       </form>
       {/* ******************* LOGS ******************* */}
-      <LogContainer showLogs={showLogs} setShowLogs={setShowLogs} />
+      <LogContainer
+        showLogs={showLogs}
+        setShowLogs={setShowLogs}
+        buyingToken={inputData.buyVia}
+      />
     </div>
   );
 }
