@@ -4,16 +4,16 @@ import { Dropdown } from 'react-bootstrap';
 
 interface IProviderSelectProps {
   disabled: boolean;
+  availableData: Array<{ id: string; value: string; icon: string }>;
   // eslint-disable-next-line no-unused-vars
   handleInputChange: (id: string, value: string) => void;
 }
 
 function SwapProviderSelect({
   disabled,
+  availableData,
   handleInputChange,
 }: IProviderSelectProps): React.JSX.Element {
-  const exchangeProvider = [{ platform: 'PancakeSwap' }];
-
   function handleSlection(selectedPlatform: string): void {
     handleInputChange('provider', selectedPlatform);
   }
@@ -27,15 +27,15 @@ function SwapProviderSelect({
           id="dropdown-basic"
           disabled={disabled}
         >
-          PancakeSwap
+          {availableData[0].value} <i className={availableData[0].icon} />
         </Dropdown.Toggle>
         <Dropdown.Menu>
-          {exchangeProvider.map((provider) => (
+          {availableData.map((data) => (
             <Dropdown.Item
-              key={provider.platform}
-              onClick={() => handleSlection(provider.platform)}
+              key={data.id}
+              onClick={() => handleSlection(data.id)}
             >
-              {provider.platform}
+              {data.value} <i className={data.icon} />
             </Dropdown.Item>
           ))}
         </Dropdown.Menu>

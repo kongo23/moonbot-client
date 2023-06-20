@@ -12,6 +12,9 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import express from 'express';
+import cors from 'cors';
+import { v4 as uuidv4 } from 'uuid';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -24,6 +27,76 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+
+const startExpress = () => {
+  const expressApp = express();
+  const port = 8080;
+  let logs = [''];
+  let simulationInterval: ReturnType<typeof setTimeout> | undefined;
+
+  expressApp.use(cors());
+
+  const getDefaultLog = (counter: number) => {
+    if (counter % 3 === 0) {
+      return 'Checking for liquidity...';
+    }
+    if (counter % 3 === 1) {
+      return 'Checking for liquidity..';
+    }
+    return 'Checking for liquidity.';
+  };
+
+  const generateGUID = () => {
+    return uuidv4();
+  };
+
+  const simulateWork = () => {
+    simulationInterval = setTimeout(() => {
+      const id = generateGUID();
+      console.log(id);
+      simulateWork();
+    }, 1000);
+  };
+
+  const stopSimulation = () => {
+    if (simulationInterval) {
+      clearTimeout(simulationInterval);
+    }
+  };
+
+  expressApp.get('/logs', (req, res) => {
+    const { counter } = req.query;
+    const defaultLog = getDefaultLog(parseInt(counter as string, 10));
+    logs = [defaultLog];
+    res.json(logs);
+  });
+
+  expressApp.get('/startBot', (req, res) => {
+    simulateWork();
+    res.send('Started!');
+  });
+
+  expressApp.get('/stopBot', (req, res) => {
+    stopSimulation();
+    res.send('Stopped!');
+  });
+
+  expressApp
+    .listen(port, () => {
+      console.log(`Express.js server is running on port ${port}`);
+    })
+    .on('error', () => {
+      const fallbackPort = port + 1;
+      console.log(
+        `Port ${port} is already in use. Trying fallback port ${fallbackPort}...`
+      );
+      expressApp.listen(fallbackPort, () => {
+        console.log(
+          `Express.js server is running on fallback port ${fallbackPort}`
+        );
+      });
+    });
+};
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -87,6 +160,10 @@ const createWindow = async () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
+
+    // Start the Express.js serverrqct component
+    startExpress();
+
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
     } else {

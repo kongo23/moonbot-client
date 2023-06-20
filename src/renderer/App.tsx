@@ -3,13 +3,10 @@ import React, { useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 // import icon from '../../assets/icon.svg';
 import Button from 'react-bootstrap/Button';
-
 // import InputGroup from 'react-bootstrap/InputGroup';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './App.css';
-
 import DefaultInfoInput from './DefaultInfoInput';
 import BuyingTypeInput from './BuyingTypeInput';
 import LogContainer from './LogContainer';
@@ -29,7 +26,9 @@ function ConfigurationForm() {
     numberOfTokensToBuy: '',
     maxSpendingLimit: '',
     usingMaxSlippage: 'true',
+    apiCredits: '100000',
   });
+  const port = 8080;
 
   const handleInputChange = (inputName: string, value: string) => {
     setInputData((prevInputData) => ({
@@ -38,10 +37,27 @@ function ConfigurationForm() {
     }));
   };
 
-  const handleStartButton = () => {
+  const startBotEndpoint = async () => {
+    try {
+      const startBotResponse = await fetch(
+        `http://localhost:${port}/startBot`,
+        {
+          method: 'GET',
+        }
+      );
+      if (startBotResponse.ok) {
+        console.log('Bot started successfully');
+      } else {
+        console.error('Failed to start the bot');
+      }
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+  };
+
+  const handleStartButton = async () => {
+    await startBotEndpoint();
     setShowLogs(true);
-    // eslint-disable-next-line no-console
-    console.log('Input Data:', inputData);
   };
 
   return (
@@ -55,6 +71,29 @@ function ConfigurationForm() {
           </div>
           <SwapProviderSelect
             disabled={showLogs}
+            availableData={[
+              {
+                id: 'premNode',
+                value: 'Fastest Node',
+                icon: 'bi bi-lightning-charge',
+              },
+              {
+                id: 'customNode',
+                value: 'Custom Node (HTTP)',
+                icon: '',
+              },
+            ]}
+            handleInputChange={handleInputChange}
+          />
+          <SwapProviderSelect
+            disabled={showLogs}
+            availableData={[
+              {
+                id: 'pancakeswap',
+                value: 'PancakeSwap',
+                icon: '',
+              },
+            ]}
             handleInputChange={handleInputChange}
           />
         </div>
@@ -93,11 +132,12 @@ function ConfigurationForm() {
           Start Bot <i className="bi bi-rocket-takeoff" />
         </Button>
       </form>
-      {/* ******************* LOGS ******************* */}
+
       <LogContainer
         showLogs={showLogs}
         setShowLogs={setShowLogs}
         buyingToken={inputData.buyVia}
+        portNumber={port}
       />
     </div>
   );
