@@ -6,7 +6,8 @@ body {
   position: relative;
   color: white;
   height: 100vh;
-  background: linear-gradient(to right, #141036, #363170, #2c2c4b);
+  background: linear-gradient(-45deg,#374d63, #4c226d, #363172, #012141);
+  background-size: 300% 300%;
   animation: gradient 15s ease infinite;
   font-family: Segoe UI;
   overflow-y: hidden;
@@ -15,6 +16,17 @@ body {
   align-items: center;
 }
 
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
 
 form{
   display: flex;
@@ -23,6 +35,13 @@ form{
 h1{
   text-align: center;
 }
+
+.title{
+  font-family: 'Trebuchet MS';
+  font-weight: 800;
+  font-size: calc(1.5rem + 1.5vw);
+}
+
 .container{
   min-width: 480px;
 }
@@ -78,9 +97,14 @@ button {
   /* margin-bottom: 0.5em; */
 }
 
-/* .main-button{
-  background-color: #52072c;
-} */
+.select-top-buttons{
+  align-self: center;
+}
+
+.main-button-top
+{
+  margin-left:0.5em;
+}
 
 /* .main-button:hover,
 .main-button:active:hover,

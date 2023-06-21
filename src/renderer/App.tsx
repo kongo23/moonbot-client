@@ -14,9 +14,12 @@ import BuyViaSelect from './BuyViaSelect';
 import SwapProviderSelect from './SwapProviderSelect';
 import SlippageOption from './SlippageOption';
 
+import { ICustomerInputData } from '../interfaces/CustomerInputData';
+import purchaseToken from '../services/purchaseTokenService';
+
 function ConfigurationForm() {
   const [showLogs, setShowLogs] = useState(false);
-  const [inputData, setInputData] = useState({
+  const [inputData, setInputData] = useState<ICustomerInputData>({
     walletAddress: '',
     password: '',
     tokenToBuy: '',
@@ -58,6 +61,7 @@ function ConfigurationForm() {
   const handleStartButton = async () => {
     await startBotEndpoint();
     setShowLogs(true);
+    purchaseToken(inputData);
   };
 
   return (
@@ -65,37 +69,39 @@ function ConfigurationForm() {
       <form className="d-flex flex-column">
         <div className="d-flex justify-content-between">
           <div className="d-flex justify-content-start">
-            <h1>
+            <h1 className="title">
               MoonBot <i className="bi bi-moon" />
             </h1>
           </div>
-          <SwapProviderSelect
-            disabled={showLogs}
-            availableData={[
-              {
-                id: 'premNode',
-                value: 'Fastest Node',
-                icon: 'bi bi-lightning-charge',
-              },
-              {
-                id: 'customNode',
-                value: 'Custom Node (HTTP)',
-                icon: '',
-              },
-            ]}
-            handleInputChange={handleInputChange}
-          />
-          <SwapProviderSelect
-            disabled={showLogs}
-            availableData={[
-              {
-                id: 'pancakeswap',
-                value: 'PancakeSwap',
-                icon: '',
-              },
-            ]}
-            handleInputChange={handleInputChange}
-          />
+          <div className="d-flex justify-content-end select-top-buttons">
+            <SwapProviderSelect
+              disabled={showLogs}
+              availableData={[
+                {
+                  id: 'premNode',
+                  value: 'Fastest Node',
+                  icon: 'bi bi-lightning-charge',
+                },
+                // {
+                //   id: 'customNode',
+                //   value: 'Custom Node (HTTP)',
+                //   icon: '',
+                // },
+              ]}
+              handleInputChange={handleInputChange}
+            />
+            <SwapProviderSelect
+              disabled={showLogs}
+              availableData={[
+                {
+                  id: 'pancakeswap',
+                  value: 'PancakeSwap',
+                  icon: '',
+                },
+              ]}
+              handleInputChange={handleInputChange}
+            />
+          </div>
         </div>
 
         <DefaultInfoInput

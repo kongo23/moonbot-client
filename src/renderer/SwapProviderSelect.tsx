@@ -19,28 +19,23 @@ function SwapProviderSelect({
   }
 
   return (
-    <div className="d-flex justify-content-end">
-      <Dropdown>
-        <Dropdown.Toggle
-          className="main-button"
-          variant="primary"
-          id="dropdown-basic"
-          disabled={disabled}
-        >
-          {availableData[0].value} <i className={availableData[0].icon} />
-        </Dropdown.Toggle>
-        <Dropdown.Menu>
-          {availableData.map((data) => (
-            <Dropdown.Item
-              key={data.id}
-              onClick={() => handleSlection(data.id)}
-            >
-              {data.value} <i className={data.icon} />
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      </Dropdown>
-    </div>
+    <Dropdown>
+      <Dropdown.Toggle
+        className="main-button-top"
+        variant="primary"
+        id="dropdown-basic"
+        disabled={disabled}
+      >
+        {availableData[0].value} <i className={availableData[0].icon} />
+      </Dropdown.Toggle>
+      <Dropdown.Menu>
+        {availableData.map((data) => (
+          <Dropdown.Item key={data.id} onClick={() => handleSlection(data.id)}>
+            {data.value} <i className={data.icon} />
+          </Dropdown.Item>
+        ))}
+      </Dropdown.Menu>
+    </Dropdown>
   );
 }
 
