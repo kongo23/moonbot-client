@@ -25,7 +25,7 @@ function ConfigurationForm() {
   const [showLogs, setShowLogs] = useState(false);
   const [inputData, setInputData] = useState<ICustomerInputData>({
     walletAddress: '0xbaaa950B2b980d9ebBC1300cBAb17A861988A825',
-    walletKey: '584a041cd6da7268dc1ebafa6a0949e909987618606a3a08a7525b1c34ac23b2',
+    walletKey: '',
     tokenToBuy: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     provider: 'PancakeSwap',
     buyingCurrency: 'BNB',
