@@ -14,19 +14,19 @@ function DefaultInfoInput({
 }: IDefaultInfoInput): React.JSX.Element {
   const inputsGeneralData = [
     {
-      placeholder: 'Your wallet private key',
-      iconclass: 'bi-wallet',
-      type: 'password',
-      id: 'password',
-    },
-    {
       placeholder: 'Your wallet address',
       iconclass: 'bi-wallet',
       id: 'walletAddress',
     },
     {
+      placeholder: 'Your wallet private key',
+      iconclass: 'bi-key',
+      type: 'password',
+      id: 'walletKey',
+    },
+    {
       placeholder: 'Token contract to buy',
-      iconclass: 'bi-cash-stack',
+      iconclass: 'bi-123',
       id: 'tokenToBuy',
     },
   ];
@@ -34,7 +34,7 @@ function DefaultInfoInput({
   return (
     <div>
       {inputsGeneralData.map((inputData) => (
-        <InputGroup className="mb-2">
+        <InputGroup key={inputData.id} className="mb-2">
           <div className="input-group-prepend">
             <span className="input-group-text input-icon">
               {' '}

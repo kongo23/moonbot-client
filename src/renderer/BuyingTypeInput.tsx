@@ -4,12 +4,14 @@ import { Form, InputGroup } from 'react-bootstrap';
 
 interface IBuyingTypeInputProps {
   disabled: boolean;
+  selectedCurrency: string;
   // eslint-disable-next-line no-unused-vars
   handleInputChange: (id: string, value: string) => void;
 }
 
 function BuyingTypeInput({
   disabled,
+  selectedCurrency,
   handleInputChange,
 }: IBuyingTypeInputProps): React.JSX.Element {
   const [buyMaxAmount, setBuyMaxAmount] = useState(true);
@@ -32,10 +34,9 @@ function BuyingTypeInput({
   }
 
   return (
-    <div>
-      <div>
+    <div className="buying-settings-block">
+      <div className="d-flex justify-content-between buying-settings-block-options">
         <Form.Check
-          inline
           label="Buy max amount of tokens"
           name="group1"
           type="radio"
@@ -45,7 +46,6 @@ function BuyingTypeInput({
           disabled={disabled}
         />
         <Form.Check
-          inline
           label="Buy explicit number of tokens"
           name="group1"
           type="radio"
@@ -60,11 +60,11 @@ function BuyingTypeInput({
           <InputGroup className="mb-2 d-flex amount-input">
             <div className="input-group-prepend">
               <span className="input-group-text input-icon">
-                <i className="bi bi-currency-dollar" />
+                <i className="bi bi-cash" />
               </span>
             </div>
             <Form.Control
-              placeholder="Amount to spend e.g (0.5, 1, 10, 10000 etc.)"
+              placeholder={`Amount to spend in ${selectedCurrency} e.g (0.5, 1, 10, 10000 etc.)`}
               disabled={disabled}
               onChange={(e) => handleTypeOfHowToBuyTokens(e.target.value, '')}
               value={amountToSpendValue}
@@ -74,7 +74,7 @@ function BuyingTypeInput({
           <InputGroup className="mb-2 d-flex amount-input">
             <div className="input-group-prepend">
               <span className="input-group-text input-icon">
-                <i className="bi bi-cash-coin" />
+                <i className="bi bi-files" />
               </span>
             </div>
             <Form.Control
@@ -92,7 +92,7 @@ function BuyingTypeInput({
             </span>
           </div>
           <Form.Control
-            placeholder="Max Spending Limit (transaction will fail if exceeds)"
+            placeholder={`Max spending limit in ${selectedCurrency} (tx will fail if exceeds)`}
             disabled={disabled}
             onChange={(e) =>
               handleInputChange('maxSpendingLimit', e.target.value)

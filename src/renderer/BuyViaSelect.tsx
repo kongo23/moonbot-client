@@ -15,13 +15,21 @@ function BuyViaSelect({
   const [selectedToken, setSelectedToken] = useState('');
 
   const buyingTokens = [
-    { id: 'bnb', currency: 'BNB', contract: '' },
-    { id: 'busd', currency: 'BUSD', contract: '' },
+    {
+      id: 'bnb',
+      currency: 'BNB',
+      contract: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+    },
+    {
+      id: 'busd',
+      currency: 'BUSD',
+      contract: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+    },
   ];
 
-  function handleSlection(currency: string): void {
+  function handleSlection(currency: string, contract: string): void {
     setSelectedToken(currency);
-    handleInputChange('buyVia', currency);
+    handleInputChange('buyingCurrency', contract);
   }
 
   return (
@@ -40,7 +48,7 @@ function BuyViaSelect({
             {buyingTokens.map((token) => (
               <Dropdown.Item
                 key={token.currency}
-                onClick={() => handleSlection(token.currency)}
+                onClick={() => handleSlection(token.currency, token.contract)}
                 active={selectedToken === token.currency}
               >
                 {token.currency}

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Spinner, Button } from 'react-bootstrap';
+import { getLogsCall, stopBotEndpointCall } from '../services/callerService';
 import { v4 as uuidv4 } from 'uuid';
 
 interface LogContainerProps {
@@ -17,43 +18,16 @@ function LogContainer({
 }: LogContainerProps): React.JSX.Element {
   const [logs, insertLog] = useState<string[]>([]);
 
-  const logsEndpointCounter = useRef<number>(0);
+  const logsEndpointCounter = useRef<number>(1);
 
-  const stopBotEndpoint = async (port: number) => {
-    try {
-      const startBotResponse = await fetch(`http://localhost:${port}/stopBot`, {
-        method: 'GET',
-      });
-      if (startBotResponse.ok) {
-        console.log('Bot stopped successfully');
-      } else {
-        console.error('Failed to stop the bot');
-      }
-    } catch (error) {
-      console.error('An error occurred:', error);
-    }
+  const retrieveLogs = async (port: number, counter: number) => {
+    const latestLogs = await getLogsCall(port, counter);
+    insertLog(latestLogs);
   };
-  const getLogs = async (port: number, counter: number) => {
-    const response = await fetch(
-      `http://localhost:${port}/logs?counter=${counter}`,
-      {
-        method: 'GET',
-      }
-    );
 
-    if (response.ok) {
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        const latestLogs = await response.json();
-        insertLog(latestLogs);
-      } else {
-        const text = await response.text();
-        console.log(text);
-      }
-    }
-  };
-  const stopBot = () => {
-    stopBotEndpoint(portNumber);
+  const stopBot = async () => {
+    await stopBotEndpointCall(portNumber);
+    insertLog(['']);
     setShowLogs(false);
   };
 
@@ -62,7 +36,7 @@ function LogContainer({
 
     if (showLogs) {
       intervalId = setInterval(() => {
-        getLogs(portNumber, logsEndpointCounter.current);
+        retrieveLogs(portNumber, logsEndpointCounter.current);
         logsEndpointCounter.current += 1;
       }, 3000);
     }
@@ -70,7 +44,7 @@ function LogContainer({
     return () => {
       if (intervalId) {
         clearInterval(intervalId);
-        logsEndpointCounter.current = 0;
+        logsEndpointCounter.current = 1;
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -78,32 +52,37 @@ function LogContainer({
 
   return (
     <Alert show={showLogs} variant="primary">
-      <Alert.Heading>
-        Running{' '}
-        <Spinner
-          className="spinner"
-          as="span"
-          animation="border"
-          size="sm"
-          role="status"
-          variant="info"
-          aria-hidden="true"
-        />
-      </Alert.Heading>
+      <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-start">
+          <Alert.Heading>
+            Running{' '}
+            <Spinner
+              className="spinner"
+              as="span"
+              animation="border"
+              size="sm"
+              role="status"
+              variant="info"
+              aria-hidden="true"
+            />
+          </Alert.Heading>
+        </div>
+        <div className="d-flex justify-content-end">
+          <Button onClick={() => stopBot()} variant="danger">
+            Stop
+          </Button>
+        </div>
+      </div>
       <p>Will buy token(s) for {buyingToken} as soon as liquidity added!</p>
       <hr />
       {logs.length > 0 && (
         <div>
+          <em>Checking for liquidity...</em> <br />
           {logs.map((log) => (
-            <p key={uuidv4()}>{log.trim()}</p>
+            <em key={uuidv4()}>{log}</em>
           ))}
         </div>
       )}
-      <div className="d-flex justify-content-end">
-        <Button onClick={() => stopBot()} variant="danger">
-          Stop
-        </Button>
-      </div>
     </Alert>
   );
 }

@@ -106,6 +106,15 @@ button {
   margin-left:0.5em;
 }
 
+.buy-via-block{
+  margin-bottom: 0.5em;
+}
+.buying-settings-block{
+  margin-top: 0.75em;
+}
+.buying-settings-block-options{
+  margin-bottom:0.25em;
+}
 /* .main-button:hover,
 .main-button:active:hover,
 .main-button:focus,

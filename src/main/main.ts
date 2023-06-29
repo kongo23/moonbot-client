@@ -13,10 +13,12 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import express from 'express';
+import bodyParser from 'body-parser';
 import cors from 'cors';
-import { v4 as uuidv4 } from 'uuid';
+import { Server } from 'http';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { retrieveLogs, startBot, stopBot } from '../controllers/controllers';
 
 class AppUpdater {
   constructor() {
@@ -27,61 +29,26 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+let expressServer: Server;
 
-const startExpress = () => {
+const stopExpressServer = () => {
+  expressServer.close(() => {
+    console.log('Express.js server has stopped');
+  });
+};
+
+const startExpressServer = () => {
   const expressApp = express();
   const port = 8080;
-  let logs = [''];
-  let simulationInterval: ReturnType<typeof setTimeout> | undefined;
 
   expressApp.use(cors());
+  expressApp.use(bodyParser.json());
 
-  const getDefaultLog = (counter: number) => {
-    if (counter % 3 === 0) {
-      return 'Checking for liquidity...';
-    }
-    if (counter % 3 === 1) {
-      return 'Checking for liquidity..';
-    }
-    return 'Checking for liquidity.';
-  };
+  expressApp.get('/logs', retrieveLogs);
+  expressApp.post('/startBot', startBot);
+  expressApp.get('/stopBot', stopBot);
 
-  const generateGUID = () => {
-    return uuidv4();
-  };
-
-  const simulateWork = () => {
-    simulationInterval = setTimeout(() => {
-      const id = generateGUID();
-      console.log(id);
-      simulateWork();
-    }, 1000);
-  };
-
-  const stopSimulation = () => {
-    if (simulationInterval) {
-      clearTimeout(simulationInterval);
-    }
-  };
-
-  expressApp.get('/logs', (req, res) => {
-    const { counter } = req.query;
-    const defaultLog = getDefaultLog(parseInt(counter as string, 10));
-    logs = [defaultLog];
-    res.json(logs);
-  });
-
-  expressApp.get('/startBot', (req, res) => {
-    simulateWork();
-    res.send('Started!');
-  });
-
-  expressApp.get('/stopBot', (req, res) => {
-    stopSimulation();
-    res.send('Stopped!');
-  });
-
-  expressApp
+  expressServer = expressApp
     .listen(port, () => {
       console.log(`Express.js server is running on port ${port}`);
     })
@@ -162,7 +129,7 @@ const createWindow = async () => {
     }
 
     // Start the Express.js serverrqct component
-    startExpress();
+    startExpressServer();
 
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
@@ -192,6 +159,10 @@ const createWindow = async () => {
 /**
  * Add event listeners...
  */
+
+app.on('will-quit', () => {
+  stopExpressServer();
+});
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even

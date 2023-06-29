@@ -15,19 +15,24 @@ import SwapProviderSelect from './SwapProviderSelect';
 import SlippageOption from './SlippageOption';
 
 import { ICustomerInputData } from '../interfaces/CustomerInputData';
-import purchaseToken from '../services/purchaseTokenService';
+import { startBotEndpointCall } from '../services/callerService';
+import {
+  purchaseToken,
+  stopPurchaseProcess,
+} from '../services/purchaseTokenService';
 
 function ConfigurationForm() {
   const [showLogs, setShowLogs] = useState(false);
   const [inputData, setInputData] = useState<ICustomerInputData>({
-    walletAddress: '',
-    password: '',
-    tokenToBuy: '',
+    walletAddress: '0xbaaa950B2b980d9ebBC1300cBAb17A861988A825',
+    walletKey: '584a041cd6da7268dc1ebafa6a0949e909987618606a3a08a7525b1c34ac23b2',
+    tokenToBuy: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     provider: 'PancakeSwap',
-    buyVia: '',
-    amountToSpend: '',
+    buyingCurrency: 'BNB',
+    buyingTokenContract: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+    amountToSpend: '0.01',
     numberOfTokensToBuy: '',
-    maxSpendingLimit: '',
+    maxSpendingLimit: '0.1',
     usingMaxSlippage: 'true',
     apiCredits: '100000',
   });
@@ -40,28 +45,14 @@ function ConfigurationForm() {
     }));
   };
 
-  const startBotEndpoint = async () => {
-    try {
-      const startBotResponse = await fetch(
-        `http://localhost:${port}/startBot`,
-        {
-          method: 'GET',
-        }
-      );
-      if (startBotResponse.ok) {
-        console.log('Bot started successfully');
-      } else {
-        console.error('Failed to start the bot');
-      }
-    } catch (error) {
-      console.error('An error occurred:', error);
-    }
-  };
-
   const handleStartButton = async () => {
-    await startBotEndpoint();
-    setShowLogs(true);
-    purchaseToken(inputData);
+    try {
+      await startBotEndpointCall(port, inputData);
+      // await purchaseToken(inputData);
+      setShowLogs(true);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -82,11 +73,6 @@ function ConfigurationForm() {
                   value: 'Fastest Node',
                   icon: 'bi bi-lightning-charge',
                 },
-                // {
-                //   id: 'customNode',
-                //   value: 'Custom Node (HTTP)',
-                //   icon: '',
-                // },
               ]}
               handleInputChange={handleInputChange}
             />
@@ -103,18 +89,11 @@ function ConfigurationForm() {
             />
           </div>
         </div>
-
         <DefaultInfoInput
           disabled={showLogs}
           handleInputChange={handleInputChange}
         />
-
-        <BuyingTypeInput
-          disabled={showLogs}
-          handleInputChange={handleInputChange}
-        />
-
-        <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-between buy-via-block">
           <div className="d-flex justify-content-start">
             <BuyViaSelect
               disabled={showLogs}
@@ -128,7 +107,11 @@ function ConfigurationForm() {
             />
           </div>
         </div>
-
+        <BuyingTypeInput
+          disabled={showLogs}
+          handleInputChange={handleInputChange}
+          selectedCurrency={inputData.buyingCurrency}
+        />
         <Button
           className="start-button"
           variant="primary"
@@ -142,7 +125,7 @@ function ConfigurationForm() {
       <LogContainer
         showLogs={showLogs}
         setShowLogs={setShowLogs}
-        buyingToken={inputData.buyVia}
+        buyingToken={inputData.buyingCurrency}
         portNumber={port}
       />
     </div>
