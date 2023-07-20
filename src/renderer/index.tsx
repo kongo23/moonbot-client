@@ -1,4 +1,9 @@
 import { createRoot } from 'react-dom/client';
+import {
+  purchaseToken,
+  stopPurchaseProcess,
+  getLogs,
+} from '../services/purchaseTokenService';
 import App from './App';
 
 const container = document.getElementById('root') as HTMLElement;
@@ -11,3 +16,17 @@ window.electron.ipcRenderer.once('ipc-example', (arg) => {
   console.log(arg);
 });
 window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
+
+window.electron.ipcRenderer.on('userInputFromMain', async (event, arg) => {
+  console.log(`Received user input into worker: ${arg}`);
+
+  await purchaseToken();
+
+  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+    'Purchased from Worker!',
+  ]);
+});
+
+window.electron.ipcRenderer.on('workerMessageFromMain', (event, arg) => {
+  console.log(`Worker process writes to UI: ${arg}`);
+});

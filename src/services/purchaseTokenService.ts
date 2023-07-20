@@ -188,7 +188,21 @@ export const stopPurchaseProcess = () => {
   clearTimeout(processInterval);
 };
 
-export const purchaseToken = async (inputData: ICustomerInputData) => {
+export const purchaseToken = async () => {
+  const inputData: ICustomerInputData = {
+    walletAddress: '0xbaaa950B2b980d9ebBC1300cBAb17A861988A825',
+    walletKey: '',
+    tokenToBuy: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+    provider: 'PancakeSwap',
+    buyingCurrency: 'BNB',
+    buyingTokenContract: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+    amountToSpend: '0.01',
+    numberOfTokensToBuy: '',
+    maxSpendingLimit: '0.1',
+    usingMaxSlippage: 'true',
+    apiCredits: '100000',
+  };
+
   console.log(inputData);
   if (shouldBeValidated) {
     const missingProperties = validateInputData(inputData);

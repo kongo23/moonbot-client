@@ -1,12 +1,11 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-// import icon from '../../assets/icon.svg';
 import Button from 'react-bootstrap/Button';
-// import InputGroup from 'react-bootstrap/InputGroup';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './App.css';
+
 import DefaultInfoInput from './DefaultInfoInput';
 import BuyingTypeInput from './BuyingTypeInput';
 import LogContainer from './LogContainer';
@@ -15,11 +14,11 @@ import SwapProviderSelect from './SwapProviderSelect';
 import SlippageOption from './SlippageOption';
 
 import { ICustomerInputData } from '../interfaces/CustomerInputData';
-import { startBotEndpointCall } from '../services/callerService';
-import {
-  purchaseToken,
-  stopPurchaseProcess,
-} from '../services/purchaseTokenService';
+// import { startBotEndpointCall } from '../services/callerService';
+// import {
+//   purchaseToken,
+//   stopPurchaseProcess,
+// } from '../services/purchaseTokenService';
 
 function ConfigurationForm() {
   const [showLogs, setShowLogs] = useState(false);
@@ -47,8 +46,16 @@ function ConfigurationForm() {
 
   const handleStartButton = async () => {
     try {
-      await startBotEndpointCall(port, inputData);
+      // await startBotEndpointCall(port, inputData);
       // await purchaseToken(inputData);
+
+      window.electron.ipcRenderer.sendMessage('userInputFromUI', [
+        'helloFromUI',
+      ]);
+
+      // contextBridge.exposeInMainWorld('electronAPI', {
+      //   setTitle: (title) => ipcRenderer.send('set-title', title);
+      // })
       setShowLogs(true);
     } catch (e) {
       console.log(e);

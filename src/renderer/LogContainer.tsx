@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Spinner, Button } from 'react-bootstrap';
-import { getLogsCall, stopBotEndpointCall } from '../services/callerService';
 import { v4 as uuidv4 } from 'uuid';
+import { getLogsCall, stopBotEndpointCall } from '../services/callerService';
 
 interface LogContainerProps {
   showLogs: boolean;
@@ -26,7 +26,7 @@ function LogContainer({
   };
 
   const stopBot = async () => {
-    await stopBotEndpointCall(portNumber);
+    // await stopBotEndpointCall(portNumber);
     insertLog(['']);
     setShowLogs(false);
   };
@@ -36,7 +36,7 @@ function LogContainer({
 
     if (showLogs) {
       intervalId = setInterval(() => {
-        retrieveLogs(portNumber, logsEndpointCounter.current);
+        // retrieveLogs(portNumber, logsEndpointCounter.current);
         logsEndpointCounter.current += 1;
       }, 3000);
     }

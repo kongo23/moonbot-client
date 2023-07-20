@@ -12,13 +12,8 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import express from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import { Server } from 'http';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { retrieveLogs, startBot, stopBot } from '../controllers/controllers';
 
 class AppUpdater {
   constructor() {
@@ -29,46 +24,34 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
-let expressServer: Server;
-
-const stopExpressServer = () => {
-  expressServer.close(() => {
-    console.log('Express.js server has stopped');
-  });
-};
-
-const startExpressServer = () => {
-  const expressApp = express();
-  const port = 8080;
-
-  expressApp.use(cors());
-  expressApp.use(bodyParser.json());
-
-  expressApp.get('/logs', retrieveLogs);
-  expressApp.post('/startBot', startBot);
-  expressApp.get('/stopBot', stopBot);
-
-  expressServer = expressApp
-    .listen(port, () => {
-      console.log(`Express.js server is running on port ${port}`);
-    })
-    .on('error', () => {
-      const fallbackPort = port + 1;
-      console.log(
-        `Port ${port} is already in use. Trying fallback port ${fallbackPort}...`
-      );
-      expressApp.listen(fallbackPort, () => {
-        console.log(
-          `Express.js server is running on fallback port ${fallbackPort}`
-        );
-      });
-    });
-};
+let workerWindow: BrowserWindow | null = null;
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.on('messageFromWorker', (event, arg) => {
+  console.log(`Main Process writes:${arg}`);
+
+  if (!mainWindow) {
+    console.log('mainWindow is null!');
+    return;
+  }
+
+  mainWindow.webContents.send('workerMessageFromMain', arg); // <<<<<<<< should work
+});
+
+ipcMain.on('userInputFromUI', async (event, arg) => {
+  console.log(`Main Process writes:${arg}`);
+
+  if (!workerWindow) {
+    console.log('mainWindow is null!');
+    return;
+  }
+
+  workerWindow.webContents.send('userInputFromMain', 'testmessageFromMain'); // <<<<<<<< should work
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -109,6 +92,17 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
+  workerWindow = new BrowserWindow({
+    show: false,
+    webPreferences: {
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
+    },
+  });
+
+  workerWindow.loadURL(resolveHtmlPath('index2.html'));
+
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
@@ -128,18 +122,25 @@ const createWindow = async () => {
       throw new Error('"mainWindow" is not defined');
     }
 
+    if (!workerWindow) {
+      throw new Error('"workerWindow" is not defined');
+    }
+
     // Start the Express.js serverrqct component
-    startExpressServer();
+    // startExpressServer();
 
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
+      workerWindow.minimize();
     } else {
       mainWindow.show();
+      // workerWindow.show();
     }
   });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+    workerWindow = null;
   });
 
   const menuBuilder = new MenuBuilder(mainWindow);
@@ -161,7 +162,7 @@ const createWindow = async () => {
  */
 
 app.on('will-quit', () => {
-  stopExpressServer();
+  // stopExpressServer();
 });
 
 app.on('window-all-closed', () => {
