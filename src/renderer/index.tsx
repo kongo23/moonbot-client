@@ -22,11 +22,7 @@ window.electron.ipcRenderer.on('userInputFromMain', async (event, arg) => {
 
   await purchaseToken();
 
-  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
-    'Purchased from Worker!',
-  ]);
-});
-
-window.electron.ipcRenderer.on('workerMessageFromMain', (event, arg) => {
-  console.log(`Worker process writes to UI: ${arg}`);
+  // window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+  //   'Purchased from Worker!',
+  // ]);
 });

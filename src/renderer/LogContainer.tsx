@@ -1,34 +1,31 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Spinner, Button } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
-import { getLogsCall, stopBotEndpointCall } from '../services/callerService';
 
 interface LogContainerProps {
   showLogs: boolean;
   setShowLogs: React.Dispatch<React.SetStateAction<boolean>>;
+  logs: string[];
+  writeLogs: React.Dispatch<React.SetStateAction<string[]>>;
   buyingToken: string;
-  portNumber: number;
 }
 
 function LogContainer({
   showLogs,
   setShowLogs,
+  logs,
+  writeLogs,
   buyingToken,
-  portNumber,
 }: LogContainerProps): React.JSX.Element {
-  const [logs, insertLog] = useState<string[]>([]);
+  // const [logs, insertLog] = useState<string[]>([]);
 
   const logsEndpointCounter = useRef<number>(1);
 
-  const retrieveLogs = async (port: number, counter: number) => {
-    const latestLogs = await getLogsCall(port, counter);
-    insertLog(latestLogs);
-  };
-
   const stopBot = async () => {
     // await stopBotEndpointCall(portNumber);
-    insertLog(['']);
+    // writeLogs(['']);
     setShowLogs(false);
+    writeLogs([]);
   };
 
   useEffect(() => {
@@ -76,12 +73,11 @@ function LogContainer({
       <p>Will buy token(s) for {buyingToken} as soon as liquidity added!</p>
       <hr />
       {logs.length > 0 && (
-        <div>
-          <em>Checking for liquidity...</em> <br />
+        <ul className="logs-data">
           {logs.map((log) => (
-            <em key={uuidv4()}>{log}</em>
+            <li key={uuidv4()}>{log}</li>
           ))}
-        </div>
+        </ul>
       )}
     </Alert>
   );

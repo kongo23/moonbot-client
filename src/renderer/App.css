@@ -71,7 +71,8 @@ h1{
 
 .alert {
   overflow-y: scroll;
-  max-height: 250px;
+  max-height: 350px;
+  max-width: 620px;
 }
 
 .spinner{
@@ -138,7 +139,7 @@ button:hover {
 }
 
 li {
-  list-style: none;
+  /* list-style: none; */
 }
 
 a {

@@ -54,14 +54,23 @@ const getApproval = async (
   approvalAmount: number
 ) => {
   console.log(`Check for approval`);
+  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+    `Check for approval`,
+  ]);
 
   const router = getSwapRouter(account);
 
   console.log(`router address: ${router.address}`);
+  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+    `router address: ${router.address}`,
+  ]);
 
   const contract = new ethers.Contract(thisTokenAddress, abi, account);
 
   console.log(`contract instance to buy: ${contract.address}`);
+  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+    `contract instance to buy: ${contract.address}`,
+  ]);
 
   const allowanceVal = await contract.allowance(
     account.address,
@@ -76,6 +85,9 @@ const getApproval = async (
 
   if (parseFloat(parseVal) === 0) {
     console.log(`Getting approval`);
+    window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+      `Getting approval`,
+    ]);
 
     const amount = ethers.utils.parseUnits(`${approvalAmount}`, 'ether');
     await contract.approve(router.address, amount).catch((err: any) => {
@@ -92,34 +104,45 @@ const buyUsingSingleTokenAmount = async (
   walletAddress: string
 ) => {
   console.log(`Buying explicitly via token value`);
+  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+    `Buying explicitly via token value`,
+  ]);
 
   const amountIn = amountToSpend;
   const amounOutMin = 0; // doesn't matter using int small value
   const amountInParsed = ethers.utils.parseUnits(`${amountIn}`, 'ether');
 
   console.log(`amountInParsed: ${amountInParsed}`);
+  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+    `amountInParsed: ${amountInParsed}`,
+  ]);
 
-  const tx = await router.swapExactETHForTokens(
-    amounOutMin,
-    [tokenIn, tokenOut],
-    walletAddress,
-    Date.now() + 1000 * 60 * 5,
-    {
-      value: amountInParsed,
-      gasLimit: 1000000, // Minimum limit is 21000, more much more better.
-      gasPrice: ethers.utils.parseUnits('25', 'gwei'), // If you buy early token recommended 15+ GWEI
-    }
-  );
+  // const tx = await router.swapExactETHForTokens(
+  //   amounOutMin,
+  //   [tokenIn, tokenOut],
+  //   walletAddress,
+  //   Date.now() + 1000 * 60 * 5,
+  //   {
+  //     value: amountInParsed,
+  //     gasLimit: 1000000, // Minimum limit is 21000, more much more better.
+  //     gasPrice: ethers.utils.parseUnits('25', 'gwei'), // If you buy early token recommended 15+ GWEI
+  //   }
+  // );
+
 
   // refactor this
-  const receipt = await tx.wait();
-  console.log(
-    `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`
-  );
-  logs.push(
-    `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`
-  );
-  return receipt;
+  // const receipt = await tx.wait();
+  // console.log(
+  //   `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`
+  // );
+  // window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+  //   `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`,
+  // ]);
+  // logs.push(
+  //   `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`
+  // );
+  // return receipt;
+  return '';
 };
 
 const checkLiquidityAndBuy = async (
@@ -129,6 +152,9 @@ const checkLiquidityAndBuy = async (
   const factory = getSwapFactory(account);
 
   console.log(`factory: ${factory.address}`);
+  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+    `factory: ${factory.address}`,
+  ]);
 
   const pairAddressx = await factory.getPair(
     inputData.buyingTokenContract,
@@ -136,12 +162,18 @@ const checkLiquidityAndBuy = async (
   );
 
   console.log(`pairAddress: ${pairAddressx}`);
+  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+    `pairAddress: ${pairAddressx}`,
+  ]);
 
   if (pairAddressx !== null && pairAddressx !== undefined) {
     if (pairAddressx.toString().indexOf('0x0000000000000') > -1) {
       console.log(
         `pairAddress ${pairAddressx} at ${Date.now()} not detected. Auto restart`
       );
+      window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+        `pairAddress ${pairAddressx} at ${Date.now()} not detected. Auto restart`,
+      ]);
 
       processInterval = setTimeout(() => {
         checkLiquidityAndBuy(account, inputData);
@@ -167,6 +199,9 @@ const checkLiquidityAndBuy = async (
   const pairBNBvalue = await erc.balanceOf(pairAddressx);
   const jmlBnb = ethers.utils.formatEther(pairBNBvalue);
   console.log(`Liquidity: ${parseInt(jmlBnb, 10) * 2}`);
+  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+    `Liquidity: ${parseInt(jmlBnb, 10) * 2}`,
+  ]);
 
   // TODO refactor
   const router = getSwapRouter(account);
@@ -214,6 +249,9 @@ export const purchaseToken = async () => {
 
   const account = connectToWallet(inputData.walletKey);
   console.log(`connected: ${account.address}`);
+  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+    `connected: ${account.address}`,
+  ]);
 
   await getApproval(inputData.tokenToBuy, account, Number.MAX_SAFE_INTEGER);
 

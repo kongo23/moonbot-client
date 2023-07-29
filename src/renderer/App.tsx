@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -22,6 +22,7 @@ import { ICustomerInputData } from '../interfaces/CustomerInputData';
 
 function ConfigurationForm() {
   const [showLogs, setShowLogs] = useState(false);
+  const [logs, writeLogs] = useState<string[]>([]);
   const [inputData, setInputData] = useState<ICustomerInputData>({
     walletAddress: '0xbaaa950B2b980d9ebBC1300cBAb17A861988A825',
     walletKey: '',
@@ -35,7 +36,25 @@ function ConfigurationForm() {
     usingMaxSlippage: 'true',
     apiCredits: '100000',
   });
-  const port = 8080;
+
+  useEffect(() => {
+    const listener = (event, arg) => {
+      // console.log(`Worker process writes to UI: ${arg}`);
+      writeLogs((prevLogs) => [...prevLogs, ...arg]);
+    };
+
+    window.electron.ipcRenderer.on('workerMessageFromMain', listener);
+
+    return () => {
+      // Clean up the event listener when the component unmounts
+      window.electron.ipcRenderer.removeListener(
+        'workerMessageFromMain',
+        listener
+      );
+    };
+  }, []); // Empty dependency array to run the effect only once
+
+  // const port = 8080;
 
   const handleInputChange = (inputName: string, value: string) => {
     setInputData((prevInputData) => ({
@@ -132,8 +151,9 @@ function ConfigurationForm() {
       <LogContainer
         showLogs={showLogs}
         setShowLogs={setShowLogs}
+        logs={logs}
+        writeLogs={writeLogs}
         buyingToken={inputData.buyingCurrency}
-        portNumber={port}
       />
     </div>
   );
