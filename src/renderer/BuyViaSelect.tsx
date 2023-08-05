@@ -29,7 +29,8 @@ function BuyViaSelect({
 
   function handleSlection(currency: string, contract: string): void {
     setSelectedToken(currency);
-    handleInputChange('buyingCurrency', contract);
+    handleInputChange('buyingToken', currency);
+    handleInputChange('buyingTokenContract', contract);
   }
 
   return (

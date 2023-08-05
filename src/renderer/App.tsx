@@ -11,14 +11,9 @@ import BuyingTypeInput from './BuyingTypeInput';
 import LogContainer from './LogContainer';
 import BuyViaSelect from './BuyViaSelect';
 import SwapProviderSelect from './SwapProviderSelect';
-import SlippageOption from './SlippageOption';
+// import SlippageOption from './SlippageOption';
 
 import { ICustomerInputData } from '../interfaces/CustomerInputData';
-// import { startBotEndpointCall } from '../services/callerService';
-// import {
-//   purchaseToken,
-//   stopPurchaseProcess,
-// } from '../services/purchaseTokenService';
 
 function ConfigurationForm() {
   const [showLogs, setShowLogs] = useState(false);
@@ -28,7 +23,7 @@ function ConfigurationForm() {
     walletKey: '',
     tokenToBuy: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     provider: 'PancakeSwap',
-    buyingCurrency: 'BNB',
+    buyingToken: 'token equivalent',
     buyingTokenContract: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
     amountToSpend: '0.01',
     numberOfTokensToBuy: '',
@@ -39,7 +34,6 @@ function ConfigurationForm() {
 
   useEffect(() => {
     const listener = (event, arg) => {
-      // console.log(`Worker process writes to UI: ${arg}`);
       writeLogs((prevLogs) => [...prevLogs, ...arg]);
     };
 
@@ -54,8 +48,6 @@ function ConfigurationForm() {
     };
   }, []); // Empty dependency array to run the effect only once
 
-  // const port = 8080;
-
   const handleInputChange = (inputName: string, value: string) => {
     setInputData((prevInputData) => ({
       ...prevInputData,
@@ -65,16 +57,9 @@ function ConfigurationForm() {
 
   const handleStartButton = async () => {
     try {
-      // await startBotEndpointCall(port, inputData);
-      // await purchaseToken(inputData);
-
       window.electron.ipcRenderer.sendMessage('userInputFromUI', [
         'helloFromUI',
       ]);
-
-      // contextBridge.exposeInMainWorld('electronAPI', {
-      //   setTitle: (title) => ipcRenderer.send('set-title', title);
-      // })
       setShowLogs(true);
     } catch (e) {
       console.log(e);
@@ -127,16 +112,25 @@ function ConfigurationForm() {
             />
           </div>
           <div className="d-flex justify-content-end">
-            <SlippageOption
+            {/* <SlippageOption
               disabled={showLogs}
               handleInputChange={handleInputChange}
-            />
+            /> */}
+            <a
+              href="#"
+              className="advanceSettings"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Coming soon!"
+            >
+              Advanced settings
+            </a>
           </div>
         </div>
         <BuyingTypeInput
           disabled={showLogs}
           handleInputChange={handleInputChange}
-          selectedCurrency={inputData.buyingCurrency}
+          selectedCurrency={inputData.buyingToken}
         />
         <Button
           className="start-button"
@@ -153,7 +147,7 @@ function ConfigurationForm() {
         setShowLogs={setShowLogs}
         logs={logs}
         writeLogs={writeLogs}
-        buyingToken={inputData.buyingCurrency}
+        buyingToken={inputData.buyingToken}
       />
     </div>
   );

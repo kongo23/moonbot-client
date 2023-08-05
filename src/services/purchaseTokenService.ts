@@ -26,8 +26,11 @@ const validateInputData = (inputData: ICustomerInputData) => {
   if (!inputData.provider) {
     missingProperties.push('provider');
   }
-  if (!inputData.buyingCurrency) {
-    missingProperties.push('buyingCurrency');
+  if (!inputData.buyingToken) {
+    missingProperties.push('buyingToken');
+  }
+  if (!inputData.buyingTokenContract) {
+    missingProperties.push('buyingTokenContract');
   }
   if (!inputData.amountToSpend) {
     missingProperties.push('amountToSpend');
@@ -229,7 +232,7 @@ export const purchaseToken = async () => {
     walletKey: '',
     tokenToBuy: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     provider: 'PancakeSwap',
-    buyingCurrency: 'BNB',
+    buyingToken: 'BNB',
     buyingTokenContract: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
     amountToSpend: '0.01',
     numberOfTokensToBuy: '',

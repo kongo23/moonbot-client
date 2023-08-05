@@ -3,7 +3,7 @@ export interface ICustomerInputData {
   walletKey: string;
   tokenToBuy: string;
   provider: string;
-  buyingCurrency: string;
+  buyingToken: string;
   buyingTokenContract: string;
   amountToSpend: string;
   numberOfTokensToBuy: string;

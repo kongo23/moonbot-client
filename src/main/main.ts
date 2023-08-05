@@ -101,12 +101,12 @@ const createWindow = async () => {
     },
   });
 
-  workerWindow.loadURL(resolveHtmlPath('index2.html'));
+  workerWindow.loadURL(resolveHtmlPath('workerWindow.html'));
 
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
-    height: 728,
+    height: 828,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
@@ -114,6 +114,8 @@ const createWindow = async () => {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
+
+  mainWindow.setMenuBarVisibility(false);
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
@@ -138,9 +140,14 @@ const createWindow = async () => {
     }
   });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-    workerWindow = null;
+  mainWindow.on('close', () => {
+    if (workerWindow) {
+      workerWindow.close();
+      workerWindow = null;
+    }
+    if (mainWindow) {
+      mainWindow.close();
+    }
   });
 
   const menuBuilder = new MenuBuilder(mainWindow);
@@ -161,13 +168,9 @@ const createWindow = async () => {
  * Add event listeners...
  */
 
-app.on('will-quit', () => {
-  // stopExpressServer();
-});
-
 app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
+  // Respect the OSX convention of having the application in memory even
   if (process.platform !== 'darwin') {
     app.quit();
   }

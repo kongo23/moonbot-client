@@ -19,7 +19,7 @@ function LogContainer({
 }: LogContainerProps): React.JSX.Element {
   // const [logs, insertLog] = useState<string[]>([]);
 
-  const logsEndpointCounter = useRef<number>(1);
+  // const logsEndpointCounter = useRef<number>(1);
 
   const stopBot = async () => {
     // await stopBotEndpointCall(portNumber);
@@ -28,24 +28,24 @@ function LogContainer({
     writeLogs([]);
   };
 
-  useEffect(() => {
-    let intervalId: ReturnType<typeof setInterval> | undefined;
+  // useEffect(() => {
+  //   let intervalId: ReturnType<typeof setInterval> | undefined;
 
-    if (showLogs) {
-      intervalId = setInterval(() => {
-        // retrieveLogs(portNumber, logsEndpointCounter.current);
-        logsEndpointCounter.current += 1;
-      }, 3000);
-    }
+  //   if (showLogs) {
+  //     // intervalId = setInterval(() => {
+  //     //   // retrieveLogs(portNumber, logsEndpointCounter.current);
+  //     //   logsEndpointCounter.current += 1;
+  //     // }, 3000);
+  //   }
 
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-        logsEndpointCounter.current = 1;
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showLogs]);
+  //   return () => {
+  //     if (intervalId) {
+  //       clearInterval(intervalId);
+  //       logsEndpointCounter.current = 1;
+  //     }
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [showLogs]);
 
   return (
     <Alert show={showLogs} variant="primary">
@@ -64,7 +64,7 @@ function LogContainer({
             />
           </Alert.Heading>
         </div>
-        <div className="d-flex justify-content-end">
+        <div className="d-flex justify-content-end logsHeader">
           <Button onClick={() => stopBot()} variant="danger">
             Stop
           </Button>

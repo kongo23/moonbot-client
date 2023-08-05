@@ -21,8 +21,4 @@ window.electron.ipcRenderer.on('userInputFromMain', async (event, arg) => {
   console.log(`Received user input into worker: ${arg}`);
 
   await purchaseToken();
-
-  // window.electron.ipcRenderer.sendMessage('messageFromWorker', [
-  //   'Purchased from Worker!',
-  // ]);
 });

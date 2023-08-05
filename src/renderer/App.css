@@ -39,11 +39,10 @@ h1{
 .title{
   font-family: 'Trebuchet MS';
   font-weight: 800;
-  font-size: calc(1.5rem + 1.5vw);
 }
 
 .container{
-  min-width: 480px;
+  min-width: 500px;
 }
 
 .input-icon{
@@ -67,12 +66,22 @@ h1{
 .available-items-list{
   text-align: center;
   margin-right: 1em;
+  align-items: center;
+}
+
+.advanceSettings{
+  color:white;
+  text-decoration: underline;
 }
 
 .alert {
   overflow-y: scroll;
   max-height: 350px;
-  max-width: 620px;
+  max-width: 520px;
+}
+
+.logsHeader{
+  margin-bottom: 1em;
 }
 
 .spinner{

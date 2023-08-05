@@ -166,8 +166,8 @@ const configuration: webpack.Configuration = {
     }),
 
     new HtmlWebpackPlugin({
-      filename: path.join('index2.html'),
-      template: path.join(webpackPaths.srcWorkerPath, 'index2.ejs'),
+      filename: path.join('workerWindow.html'),
+      template: path.join(webpackPaths.srcWorkerPath, 'workerWindow.ejs'),
       minify: {
         collapseWhitespace: true,
         removeAttributeQuotes: true,
