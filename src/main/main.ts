@@ -32,7 +32,7 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
-ipcMain.on('messageFromWorker', (event, arg) => {
+ipcMain.on('transmitLogToMainProcess', (event, arg) => {
   console.log(`Main Process writes:${arg}`);
 
   if (!mainWindow) {
@@ -40,18 +40,18 @@ ipcMain.on('messageFromWorker', (event, arg) => {
     return;
   }
 
-  mainWindow.webContents.send('workerMessageFromMain', arg); // <<<<<<<< should work
+  mainWindow.webContents.send('sendLogToUi', arg); // <<<<<<<< should work
 });
 
-ipcMain.on('userInputFromUI', async (event, arg) => {
-  console.log(`Main Process writes:${arg}`);
+ipcMain.on('transmitUserInputToMainProcess', async (event, arg) => {
+  console.log(`Main Process writes (InputData):${arg}`);
 
   if (!workerWindow) {
     console.log('mainWindow is null!');
     return;
   }
 
-  workerWindow.webContents.send('userInputFromMain', 'testmessageFromMain'); // <<<<<<<< should work
+  workerWindow.webContents.send('sendUserInputToWorker', arg); // <<<<<<<< should work
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -146,7 +146,7 @@ const createWindow = async () => {
       workerWindow = null;
     }
     if (mainWindow) {
-      mainWindow.close();
+      mainWindow = null;
     }
   });
 

@@ -33,18 +33,15 @@ function ConfigurationForm() {
   });
 
   useEffect(() => {
-    const listener = (event, arg) => {
+    const logNewEvent = (event: any, arg: any) => {
       writeLogs((prevLogs) => [...prevLogs, ...arg]);
     };
 
-    window.electron.ipcRenderer.on('workerMessageFromMain', listener);
+    window.electron.ipcRenderer.on('sendLogToUi', logNewEvent);
 
     return () => {
       // Clean up the event listener when the component unmounts
-      window.electron.ipcRenderer.removeListener(
-        'workerMessageFromMain',
-        listener
-      );
+      window.electron.ipcRenderer.removeListener('sendLogToUi', logNewEvent);
     };
   }, []); // Empty dependency array to run the effect only once
 
@@ -57,9 +54,10 @@ function ConfigurationForm() {
 
   const handleStartButton = async () => {
     try {
-      window.electron.ipcRenderer.sendMessage('userInputFromUI', [
-        'helloFromUI',
-      ]);
+      window.electron.ipcRenderer.sendMessage(
+        'transmitUserInputToMainProcess',
+        [inputData]
+      );
       setShowLogs(true);
     } catch (e) {
       console.log(e);

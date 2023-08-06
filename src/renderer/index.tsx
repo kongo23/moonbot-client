@@ -1,9 +1,6 @@
 import { createRoot } from 'react-dom/client';
-import {
-  purchaseToken,
-  stopPurchaseProcess,
-  getLogs,
-} from '../services/purchaseTokenService';
+import { ICustomerInputData } from 'interfaces/CustomerInputData';
+import { purchaseToken } from '../services/purchaseTokenService';
 import App from './App';
 
 const container = document.getElementById('root') as HTMLElement;
@@ -17,8 +14,12 @@ window.electron.ipcRenderer.once('ipc-example', (arg) => {
 });
 window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
 
-window.electron.ipcRenderer.on('userInputFromMain', async (event, arg) => {
-  console.log(`Received user input into worker: ${arg}`);
-
-  await purchaseToken();
+window.electron.ipcRenderer.on('sendUserInputToWorker', async (event, arg) => {
+  if (Array.isArray(arg)) {
+    arg.map(async (customerInput) => {
+      await purchaseToken(customerInput);
+    });
+  } else {
+    console.error('Invalid argument:', arg);
+  }
 });

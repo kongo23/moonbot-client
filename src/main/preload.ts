@@ -5,10 +5,10 @@ import { ICustomerInputData } from 'interfaces/CustomerInputData';
 
 export type Channels =
   | 'ipc-example'
-  | 'userInputFromUI'
-  | 'userInputFromMain'
-  | 'messageFromWorker'
-  | 'workerMessageFromMain';
+  | 'transmitUserInputToMainProcess'
+  | 'sendUserInputToWorker'
+  | 'transmitLogToMainProcess'
+  | 'sendLogToUi';
 
 const electronHandler = {
   ipcRenderer: {

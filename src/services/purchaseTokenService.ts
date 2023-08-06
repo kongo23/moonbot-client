@@ -57,21 +57,21 @@ const getApproval = async (
   approvalAmount: number
 ) => {
   console.log(`Check for approval`);
-  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `Check for approval`,
   ]);
 
   const router = getSwapRouter(account);
 
   console.log(`router address: ${router.address}`);
-  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `router address: ${router.address}`,
   ]);
 
   const contract = new ethers.Contract(thisTokenAddress, abi, account);
 
   console.log(`contract instance to buy: ${contract.address}`);
-  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `contract instance to buy: ${contract.address}`,
   ]);
 
@@ -88,7 +88,7 @@ const getApproval = async (
 
   if (parseFloat(parseVal) === 0) {
     console.log(`Getting approval`);
-    window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+    window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
       `Getting approval`,
     ]);
 
@@ -107,7 +107,7 @@ const buyUsingSingleTokenAmount = async (
   walletAddress: string
 ) => {
   console.log(`Buying explicitly via token value`);
-  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `Buying explicitly via token value`,
   ]);
 
@@ -116,7 +116,7 @@ const buyUsingSingleTokenAmount = async (
   const amountInParsed = ethers.utils.parseUnits(`${amountIn}`, 'ether');
 
   console.log(`amountInParsed: ${amountInParsed}`);
-  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `amountInParsed: ${amountInParsed}`,
   ]);
 
@@ -138,7 +138,7 @@ const buyUsingSingleTokenAmount = async (
   // console.log(
   //   `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`
   // );
-  // window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+  // window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
   //   `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`,
   // ]);
   // logs.push(
@@ -155,7 +155,7 @@ const checkLiquidityAndBuy = async (
   const factory = getSwapFactory(account);
 
   console.log(`factory: ${factory.address}`);
-  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `factory: ${factory.address}`,
   ]);
 
@@ -165,7 +165,7 @@ const checkLiquidityAndBuy = async (
   );
 
   console.log(`pairAddress: ${pairAddressx}`);
-  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `pairAddress: ${pairAddressx}`,
   ]);
 
@@ -174,7 +174,7 @@ const checkLiquidityAndBuy = async (
       console.log(
         `pairAddress ${pairAddressx} at ${Date.now()} not detected. Auto restart`
       );
-      window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+      window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
         `pairAddress ${pairAddressx} at ${Date.now()} not detected. Auto restart`,
       ]);
 
@@ -202,7 +202,7 @@ const checkLiquidityAndBuy = async (
   const pairBNBvalue = await erc.balanceOf(pairAddressx);
   const jmlBnb = ethers.utils.formatEther(pairBNBvalue);
   console.log(`Liquidity: ${parseInt(jmlBnb, 10) * 2}`);
-  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `Liquidity: ${parseInt(jmlBnb, 10) * 2}`,
   ]);
 
@@ -226,8 +226,12 @@ export const stopPurchaseProcess = () => {
   clearTimeout(processInterval);
 };
 
-export const purchaseToken = async () => {
-  const inputData: ICustomerInputData = {
+export const purchaseToken = async (customerInputData: ICustomerInputData) => {
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+    `Received buyingToken: ${customerInputData.buyingToken}`,
+  ]);
+
+  const defaultInputData: ICustomerInputData = {
     walletAddress: '0xbaaa950B2b980d9ebBC1300cBAb17A861988A825',
     walletKey: '',
     tokenToBuy: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
@@ -241,24 +245,32 @@ export const purchaseToken = async () => {
     apiCredits: '100000',
   };
 
-  console.log(inputData);
   if (shouldBeValidated) {
-    const missingProperties = validateInputData(inputData);
-    console.log('invalid');
+    const missingProperties = validateInputData(defaultInputData);
     if (missingProperties.length > 0) {
-      return missingProperties;
+      window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+        `Invalid Input! Missing fields: ${missingProperties}`,
+      ]);
+
+      return;
     }
   }
 
-  const account = connectToWallet(inputData.walletKey);
-  console.log(`connected: ${account.address}`);
-  window.electron.ipcRenderer.sendMessage('messageFromWorker', [
-    `connected: ${account.address}`,
-  ]);
+  try {
+    const account = connectToWallet(defaultInputData.walletKey);
+    window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+      `connected: ${account.address}`,
+    ]);
 
-  await getApproval(inputData.tokenToBuy, account, Number.MAX_SAFE_INTEGER);
-
-  await checkLiquidityAndBuy(account, inputData);
-
-  return [''];
+    await getApproval(
+      defaultInputData.tokenToBuy,
+      account,
+      Number.MAX_SAFE_INTEGER
+    );
+    await checkLiquidityAndBuy(account, defaultInputData);
+  } catch (error) {
+    window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+      `Failed! Error: ${error}`,
+    ]);
+  }
 };
