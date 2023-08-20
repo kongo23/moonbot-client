@@ -64,7 +64,7 @@ function BuyingTypeInput({
               </span>
             </div>
             <Form.Control
-              placeholder={`Amount to spend in ${selectedCurrency} e.g (0.5, 1, 10, 10000 etc.)`}
+              placeholder={`Amount to spend ${selectedCurrency} e.g (0.5, 1, 10 etc.)`}
               disabled={disabled}
               onChange={(e) => handleTypeOfHowToBuyTokens(e.target.value, '')}
               value={amountToSpendValue}
@@ -78,7 +78,7 @@ function BuyingTypeInput({
               </span>
             </div>
             <Form.Control
-              placeholder="Number of tokens to buy e.g (0.5, 1, 10, 10000 etc.)"
+              placeholder="Number of tokens to buy e.g (0.5, 1, 10 etc.)"
               disabled={disabled}
               onChange={(e) => handleTypeOfHowToBuyTokens('', e.target.value)}
               value={numberOfTokensToBuyValue}
@@ -92,7 +92,7 @@ function BuyingTypeInput({
             </span>
           </div>
           <Form.Control
-            placeholder={`Max spending limit in ${selectedCurrency} (tx will fail if exceeds)`}
+            placeholder={`Max spending limit in ${selectedCurrency} - tx will fail if exceeds`}
             disabled={disabled}
             onChange={(e) =>
               handleInputChange('maxSpendingLimit', e.target.value)

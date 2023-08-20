@@ -6,7 +6,7 @@ body {
   position: relative;
   color: white;
   height: 100vh;
-  background: linear-gradient(-45deg,#374d63, #4c226d, #363172, #012141);
+  background: linear-gradient(-45deg,#253d55, #4c226d, #363172, #012141);
   background-size: 300% 300%;
   animation: gradient 15s ease infinite;
   font-family: Segoe UI;
@@ -69,9 +69,15 @@ h1{
   align-items: center;
 }
 
-.advanceSettings{
+/* .advanceSettings{
   color:white;
+}
+
+.advanceSettings span{
   text-decoration: underline;
+} */
+.advanced-settings{
+  align-items: center;
 }
 
 .alert {
@@ -86,6 +92,10 @@ h1{
 
 .spinner{
   vertical-align: top;
+}
+
+.checkmark{
+  color:green;
 }
 
 button {

@@ -201,7 +201,6 @@ const checkLiquidityAndBuy = async (
 
   const pairBNBvalue = await erc.balanceOf(pairAddressx);
   const jmlBnb = ethers.utils.formatEther(pairBNBvalue);
-  console.log(`Liquidity: ${parseInt(jmlBnb, 10) * 2}`);
   window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `Liquidity: ${parseInt(jmlBnb, 10) * 2}`,
   ]);
@@ -216,6 +215,10 @@ const checkLiquidityAndBuy = async (
     inputData.tokenToBuy,
     inputData.walletAddress
   );
+
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+    `Done!`,
+  ]);
 };
 
 export const getLogs = () => {

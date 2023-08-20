@@ -44,7 +44,7 @@ ipcMain.on('transmitLogToMainProcess', (event, arg) => {
 });
 
 ipcMain.on('transmitUserInputToMainProcess', async (event, arg) => {
-  console.log(`Main Process writes (InputData):${arg}`);
+  console.log(`Main Process writes:${arg}`);
 
   if (!workerWindow) {
     console.log('mainWindow is null!');
@@ -106,7 +106,7 @@ const createWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
-    height: 828,
+    height: 928,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
