@@ -25,6 +25,7 @@ function LogContainer({
     setShowLogs(false);
     setFinished(false);
     writeLogs([]);
+    //TODO STOP LOOP
   };
 
   return (

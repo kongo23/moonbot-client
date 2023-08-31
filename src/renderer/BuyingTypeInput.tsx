@@ -39,7 +39,7 @@ function BuyingTypeInput({
     <div className="buying-settings-block">
       <div className="d-flex justify-content-between buying-settings-block-options">
         <Form.Check
-          label="Buy max amount of tokens"
+          label="Buy maximum tokens"
           name="group1"
           type="radio"
           id="max-amount"
@@ -48,7 +48,7 @@ function BuyingTypeInput({
           disabled={disabled}
         />
         <Form.Check
-          label="Buy explicit number of tokens"
+          label="Buy exact number of tokens"
           name="group1"
           type="radio"
           id="explicit-amount"

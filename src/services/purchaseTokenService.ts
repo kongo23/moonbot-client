@@ -8,8 +8,9 @@ import {
 import { ICustomerInputData } from '../interfaces/CustomerInputData';
 
 const shouldBeValidated = true;
+let buyingAttemptCounter = 0;
+const maxAllowedAttempts = 4800; // 4 hours (using 3s delay)
 let processInterval: ReturnType<typeof setTimeout> | undefined;
-const logs = [''];
 
 const validateInputData = (inputData: ICustomerInputData) => {
   const missingProperties: string[] = [];
@@ -137,7 +138,7 @@ const buyUsingSingleTokenAmount = async (
 const buyUsingTokensOutputAmount = async (
   router: ethers.Contract,
   numberOfTokensToBuy: string,
-  maxAmountToSpend: string,
+  maxSpendingLimit: string,
   tokenIn: string,
   tokenOut: string,
   walletAddress: string
@@ -154,7 +155,7 @@ const buyUsingTokensOutputAmount = async (
   //   walletAddress,
   //   Date.now() + 1000 * 60 * 5,
   //   {
-  //     value: ethers.utils.parseUnits(`${maxAmountToSpend}`, 'ether'),
+  //     value: ethers.utils.parseUnits(`${maxSpendingLimit}`, 'ether'),
   //     gasLimit: process.env.GAS_LIMIT,
   //     gasPrice: ethers.utils.parseUnits(`${process.env.GWEI}`, 'gwei'),
   //   }
@@ -190,16 +191,17 @@ const checkLiquidityAndBuy = async (
 
   if (pairAddressx !== null && pairAddressx !== undefined) {
     if (pairAddressx.toString().indexOf('0x0000000000000') > -1) {
-      console.log(
-        `pairAddress ${pairAddressx} at ${Date.now()} not detected. Auto restart`
-      );
       window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-        `pairAddress ${pairAddressx} at ${Date.now()} not detected. Auto restart`,
+        `Liquidity ${pairAddressx} at ${Date.now()} not detected. Auto restart`,
       ]);
 
-      processInterval = setTimeout(() => {
-        checkLiquidityAndBuy(account, inputData);
-      }, 3000);
+      if (buyingAttemptCounter <= maxAllowedAttempts) {
+        buyingAttemptCounter += 1;
+
+        processInterval = setTimeout(() => {
+          checkLiquidityAndBuy(account, inputData);
+        }, 3000);
+      }
     }
   }
 
@@ -251,16 +253,15 @@ const checkLiquidityAndBuy = async (
   ]);
 };
 
-export const getLogs = () => {
-  return logs;
-};
-
+//TODO STOP LOOP AFTER SOME TIME
 export const stopPurchaseProcess = () => {
   clearTimeout(processInterval);
 };
 
 export const purchaseToken = async (customerInputData: ICustomerInputData) => {
   // eslint-disable-next-line no-param-reassign
+  buyingAttemptCounter = 0;
+
   customerInputData = {
     walletAddress: '0xbaaa950B2b980d9ebBC1300cBAb17A861988A825',
     walletKey: '',
