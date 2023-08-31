@@ -16,11 +16,8 @@ function BuyingTypeInput({
 }: IBuyingTypeInputProps): React.JSX.Element {
   const [buyMaxAmount, setBuyMaxAmount] = useState(true);
   const [amountToSpendValue, setAmountToSpendInputValue] = useState('');
-  const [numberOfTokensToBuyValue, setNumberOfTokensToBuyInputValue] = useState('');
-
-  function handleRadioChange(event: ChangeEvent<HTMLInputElement>) {
-    setBuyMaxAmount(event.target.id === 'max-amount');
-  }
+  const [numberOfTokensToBuyValue, setNumberOfTokensToBuyInputValue] =
+    useState('');
 
   function handleTypeOfHowToBuyTokens(
     amountToSpendParam: string,
@@ -31,6 +28,11 @@ function BuyingTypeInput({
     // managing values cleaning up
     setAmountToSpendInputValue(amountToSpendParam);
     setNumberOfTokensToBuyInputValue(numberOfTokensToBuyParam);
+  }
+
+  function handleRadioChange(event: ChangeEvent<HTMLInputElement>) {
+    setBuyMaxAmount(event.target.id === 'max-amount');
+    handleTypeOfHowToBuyTokens('', '');
   }
 
   return (
@@ -64,41 +66,43 @@ function BuyingTypeInput({
               </span>
             </div>
             <Form.Control
-              placeholder={`Amount to spend ${selectedCurrency} e.g (0.5, 1, 10 etc.)`}
+              placeholder={`Amount to spend in ${selectedCurrency} e.g (0.5, 1, 10 etc.)`}
               disabled={disabled}
               onChange={(e) => handleTypeOfHowToBuyTokens(e.target.value, '')}
               value={amountToSpendValue}
             />
           </InputGroup>
         ) : (
-          <InputGroup className="mb-2 d-flex amount-input">
-            <div className="input-group-prepend">
-              <span className="input-group-text input-icon">
-                <i className="bi bi-files" />
-              </span>
-            </div>
-            <Form.Control
-              placeholder="Number of tokens to buy e.g (0.5, 1, 10 etc.)"
-              disabled={disabled}
-              onChange={(e) => handleTypeOfHowToBuyTokens('', e.target.value)}
-              value={numberOfTokensToBuyValue}
-            />
-          </InputGroup>
+          <>
+            <InputGroup className="mb-2 d-flex amount-input">
+              <div className="input-group-prepend">
+                <span className="input-group-text input-icon">
+                  <i className="bi bi-files" />
+                </span>
+              </div>
+              <Form.Control
+                placeholder="Number of tokens to buy e.g (0.5, 1, 10 etc.)"
+                disabled={disabled}
+                onChange={(e) => handleTypeOfHowToBuyTokens('', e.target.value)}
+                value={numberOfTokensToBuyValue}
+              />
+            </InputGroup>
+            <InputGroup className="mb-2 d-flex amount-input">
+              <div className="input-group-prepend">
+                <span className="input-group-text input-icon">
+                  <i className="bi bi-cash-coin" />
+                </span>
+              </div>
+              <Form.Control
+                placeholder={`Max spending limit in ${selectedCurrency} - tx will fail if exceeds`}
+                disabled={disabled}
+                onChange={(e) =>
+                  handleInputChange('maxSpendingLimit', e.target.value)
+                }
+              />
+            </InputGroup>
+          </>
         )}
-        <InputGroup className="mb-2 d-flex amount-input">
-          <div className="input-group-prepend">
-            <span className="input-group-text input-icon">
-              <i className="bi bi-cash-coin" />
-            </span>
-          </div>
-          <Form.Control
-            placeholder={`Max spending limit in ${selectedCurrency} - tx will fail if exceeds`}
-            disabled={disabled}
-            onChange={(e) =>
-              handleInputChange('maxSpendingLimit', e.target.value)
-            }
-          />
-        </InputGroup>
       </div>
     </div>
   );

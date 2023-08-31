@@ -32,13 +32,13 @@ const validateInputData = (inputData: ICustomerInputData) => {
   if (!inputData.buyingTokenContract) {
     missingProperties.push('buyingTokenContract');
   }
-  if (!inputData.amountToSpend) {
+  if (!inputData.numberOfTokensToBuy && !inputData.amountToSpend) {
     missingProperties.push('amountToSpend');
   }
   if (!inputData.amountToSpend && !inputData.numberOfTokensToBuy) {
     missingProperties.push('numberOfTokensToBuy');
   }
-  if (!inputData.maxSpendingLimit) {
+  if (!inputData.amountToSpend && !inputData.maxSpendingLimit) {
     missingProperties.push('maxSpendingLimit');
   }
   if (!inputData.usingMaxSlippage) {
@@ -56,23 +56,16 @@ const getApproval = async (
   account: ethers.Wallet,
   approvalAmount: number
 ) => {
-  console.log(`Check for approval`);
-  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `Check for approval`,
-  ]);
-
   const router = getSwapRouter(account);
 
-  console.log(`router address: ${router.address}`);
   window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `router address: ${router.address}`,
+    `router: ${router.address}`,
   ]);
 
   const contract = new ethers.Contract(thisTokenAddress, abi, account);
 
-  console.log(`contract instance to buy: ${contract.address}`);
   window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `contract instance to buy: ${contract.address}`,
+    `contract to buy: ${contract.address}`,
   ]);
 
   const allowanceVal = await contract.allowance(
@@ -106,19 +99,12 @@ const buyUsingSingleTokenAmount = async (
   tokenOut: string,
   walletAddress: string
 ) => {
-  console.log(`Buying explicitly via token value`);
   window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `Buying explicitly via token value`,
+    `Buying max amount of token(s)`,
   ]);
 
-  const amountIn = amountToSpend;
   const amounOutMin = 0; // doesn't matter using int small value
-  const amountInParsed = ethers.utils.parseUnits(`${amountIn}`, 'ether');
-
-  console.log(`amountInParsed: ${amountInParsed}`);
-  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `amountInParsed: ${amountInParsed}`,
-  ]);
+  const amountInParsed = ethers.utils.parseUnits(`${amountToSpend}`, 'ether');
 
   // const tx = await router.swapExactETHForTokens(
   //   amounOutMin,
@@ -131,7 +117,6 @@ const buyUsingSingleTokenAmount = async (
   //     gasPrice: ethers.utils.parseUnits('25', 'gwei'), // If you buy early token recommended 15+ GWEI
   //   }
   // );
-
 
   // refactor this
   // const receipt = await tx.wait();
@@ -146,6 +131,40 @@ const buyUsingSingleTokenAmount = async (
   // );
   // return receipt;
   return '';
+};
+
+// possible EXCESSIVE_INPUT_AMOUNT if amountInMax was not enough
+const buyUsingTokensOutputAmount = async (
+  router: ethers.Contract,
+  numberOfTokensToBuy: string,
+  maxAmountToSpend: string,
+  tokenIn: string,
+  tokenOut: string,
+  walletAddress: string
+) => {
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+    `Buying explicit number of token(s)`,
+  ]);
+
+  const numberOfTokensOut = ethers.utils.parseUnits(numberOfTokensToBuy);
+
+  // const tx = await router.swapETHForExactTokens(
+  //   numberOfTokensOut,
+  //   [tokenIn, tokenOut],
+  //   walletAddress,
+  //   Date.now() + 1000 * 60 * 5,
+  //   {
+  //     value: ethers.utils.parseUnits(`${maxAmountToSpend}`, 'ether'),
+  //     gasLimit: process.env.GAS_LIMIT,
+  //     gasPrice: ethers.utils.parseUnits(`${process.env.GWEI}`, 'gwei'),
+  //   }
+  // );
+
+  // const receipt = await tx.wait();
+  // console.log(
+  //   `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`
+  // );
+  // return receipt;
 };
 
 const checkLiquidityAndBuy = async (
@@ -208,13 +227,24 @@ const checkLiquidityAndBuy = async (
   // TODO refactor
   const router = getSwapRouter(account);
 
-  await buyUsingSingleTokenAmount(
-    router,
-    inputData.amountToSpend,
-    inputData.buyingTokenContract,
-    inputData.tokenToBuy,
-    inputData.walletAddress
-  );
+  if (inputData.amountToSpend) {
+    await buyUsingSingleTokenAmount(
+      router,
+      inputData.amountToSpend,
+      inputData.buyingTokenContract,
+      inputData.tokenToBuy,
+      inputData.walletAddress
+    );
+  } else {
+    await buyUsingTokensOutputAmount(
+      router,
+      inputData.numberOfTokensToBuy,
+      inputData.maxSpendingLimit,
+      inputData.buyingTokenContract,
+      inputData.tokenToBuy,
+      inputData.walletAddress
+    );
+  }
 
   window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `Done!`,
@@ -230,26 +260,23 @@ export const stopPurchaseProcess = () => {
 };
 
 export const purchaseToken = async (customerInputData: ICustomerInputData) => {
-  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `Received buyingToken: ${customerInputData.buyingToken}`,
-  ]);
-
-  const defaultInputData: ICustomerInputData = {
+  // eslint-disable-next-line no-param-reassign
+  customerInputData = {
     walletAddress: '0xbaaa950B2b980d9ebBC1300cBAb17A861988A825',
     walletKey: '',
     tokenToBuy: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     provider: 'PancakeSwap',
     buyingToken: 'BNB',
     buyingTokenContract: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-    amountToSpend: '0.01',
-    numberOfTokensToBuy: '',
-    maxSpendingLimit: '0.1',
+    amountToSpend: '',
+    numberOfTokensToBuy: '1001',
+    maxSpendingLimit: '3',
     usingMaxSlippage: 'true',
     apiCredits: '100000',
   };
 
   if (shouldBeValidated) {
-    const missingProperties = validateInputData(defaultInputData);
+    const missingProperties = validateInputData(customerInputData);
     if (missingProperties.length > 0) {
       window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
         `Invalid Input! Missing fields: ${missingProperties}`,
@@ -259,18 +286,28 @@ export const purchaseToken = async (customerInputData: ICustomerInputData) => {
     }
   }
 
+  if (!customerInputData.numberOfTokensToBuy) {
+    window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+      `Buying max amount of token(s) for ${customerInputData.amountToSpend} ${customerInputData.buyingToken}!`,
+    ]);
+  } else {
+    window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+      `Buying ${customerInputData.numberOfTokensToBuy} token(s) for no more than ${customerInputData.maxSpendingLimit} ${customerInputData.buyingToken}!`,
+    ]);
+  }
+
   try {
-    const account = connectToWallet(defaultInputData.walletKey);
+    const account = connectToWallet(customerInputData.walletKey);
     window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
       `connected: ${account.address}`,
     ]);
 
     await getApproval(
-      defaultInputData.tokenToBuy,
+      customerInputData.tokenToBuy,
       account,
       Number.MAX_SAFE_INTEGER
     );
-    await checkLiquidityAndBuy(account, defaultInputData);
+    await checkLiquidityAndBuy(account, customerInputData);
   } catch (error) {
     window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
       `Failed! Error: ${error}`,

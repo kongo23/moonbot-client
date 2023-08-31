@@ -113,7 +113,7 @@ button {
 }
 
 .start-button{
-  margin-top: 1em;
+  margin-top: 0.5em;
   /* margin-bottom: 0.5em; */
 }
 
@@ -130,7 +130,7 @@ button {
   margin-bottom: 0.5em;
 }
 .buying-settings-block{
-  margin-top: 0.75em;
+  margin-top: 0.2em;
 }
 .buying-settings-block-options{
   margin-bottom:0.25em;
@@ -157,8 +157,8 @@ button:hover {
   box-shadow: none;
 }
 
-li {
-  /* list-style: none; */
+.logs-data{
+  font-family: ui-monospace;
 }
 
 a {

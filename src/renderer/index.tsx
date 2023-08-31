@@ -1,5 +1,4 @@
 import { createRoot } from 'react-dom/client';
-import { ICustomerInputData } from 'interfaces/CustomerInputData';
 import { purchaseToken } from '../services/purchaseTokenService';
 import App from './App';
 

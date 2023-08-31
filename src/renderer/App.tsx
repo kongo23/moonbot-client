@@ -16,15 +16,15 @@ function ConfigurationForm() {
   const [isFinished, setFinished] = useState(false);
   const [logs, writeLogs] = useState<string[]>([]);
   const [inputData, setInputData] = useState<ICustomerInputData>({
-    walletAddress: '0xbaaa950B2b980d9ebBC1300cBAb17A861988A825',
-    walletKey: '',
-    tokenToBuy: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+    walletAddress: '{walletAddress}',
+    walletKey: '{walletKey}',
+    tokenToBuy: '{tokenToBuy}',
     provider: 'PancakeSwap',
     buyingToken: '{token}',
-    buyingTokenContract: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-    amountToSpend: '0.01',
+    buyingTokenContract: '{buyingTokenContract}',
+    amountToSpend: '',
     numberOfTokensToBuy: '',
-    maxSpendingLimit: '0.1',
+    maxSpendingLimit: '',
     usingMaxSlippage: 'true',
     apiCredits: '100000',
   });
