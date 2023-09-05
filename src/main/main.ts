@@ -33,25 +33,25 @@ ipcMain.on('ipc-example', async (event, arg) => {
 });
 
 ipcMain.on('transmitLogToMainProcess', (event, arg) => {
-  console.log(`Main Process writes:${arg}`);
+  console.log(`Main Process writes (transmitLogToMainProcess):${arg}`);
 
   if (!mainWindow) {
     console.log('mainWindow is null!');
     return;
   }
 
-  mainWindow.webContents.send('sendLogToUi', arg); // <<<<<<<< should work
+  mainWindow.webContents.send('sendLogToUi', arg);
 });
 
 ipcMain.on('transmitUserInputToMainProcess', async (event, arg) => {
-  console.log(`Main Process writes:${arg}`);
+  console.log(`Main Process writes (transmitUserInputToMainProcess):${arg}`);
 
   if (!workerWindow) {
     console.log('mainWindow is null!');
     return;
   }
 
-  workerWindow.webContents.send('sendUserInputToWorker', arg); // <<<<<<<< should work
+  workerWindow.webContents.send('sendUserInputToWorker', arg);
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -128,15 +128,11 @@ const createWindow = async () => {
       throw new Error('"workerWindow" is not defined');
     }
 
-    // Start the Express.js serverrqct component
-    // startExpressServer();
-
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
       workerWindow.minimize();
     } else {
       mainWindow.show();
-      // workerWindow.show();
     }
   });
 

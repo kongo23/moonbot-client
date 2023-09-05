@@ -4,28 +4,23 @@ import { v4 as uuidv4 } from 'uuid';
 
 interface LogContainerProps {
   showLogs: boolean;
-  setShowLogs: React.Dispatch<React.SetStateAction<boolean>>;
   isFinished: boolean;
-  setFinished: React.Dispatch<React.SetStateAction<boolean>>;
+  isTimeout: boolean;
   logs: string[];
-  writeLogs: React.Dispatch<React.SetStateAction<string[]>>;
   buyingToken: string;
+  handleStopButton: () => void;
 }
 
 function LogContainer({
   showLogs,
-  setShowLogs,
   isFinished,
-  setFinished,
+  isTimeout,
   logs,
-  writeLogs,
   buyingToken,
+  handleStopButton,
 }: LogContainerProps): React.JSX.Element {
   const stopBot = async () => {
-    setShowLogs(false);
-    setFinished(false);
-    writeLogs([]);
-    //TODO STOP LOOP
+    handleStopButton();
   };
 
   return (
@@ -38,16 +33,18 @@ function LogContainer({
             </Alert.Heading>
           ) : (
             <Alert.Heading>
-              Running{' '}
-              <Spinner
-                className="spinner"
-                as="span"
-                animation="border"
-                size="sm"
-                role="status"
-                variant="info"
-                aria-hidden="true"
-              />
+              {!isTimeout ? 'Running ' : 'TIMEOUT - Please retry'}
+              {!isTimeout ? (
+                <Spinner
+                  className="spinner"
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  variant="info"
+                  aria-hidden="true"
+                />
+              ) : null}
             </Alert.Heading>
           )}
         </div>

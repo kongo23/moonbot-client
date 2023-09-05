@@ -59,14 +59,12 @@ const getApproval = async (
 ) => {
   const router = getSwapRouter(account);
 
-  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `router: ${router.address}`,
-  ]);
+  console.log(`router: ${router.address}`);
 
   const contract = new ethers.Contract(thisTokenAddress, abi, account);
 
   window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `contract to buy: ${contract.address}`,
+    `Purchase: ${contract.address}`,
   ]);
 
   const allowanceVal = await contract.allowance(
@@ -174,25 +172,24 @@ const checkLiquidityAndBuy = async (
 ) => {
   const factory = getSwapFactory(account);
 
-  console.log(`factory: ${factory.address}`);
-  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `factory: ${factory.address}`,
-  ]);
+  if (!buyingAttemptCounter) {
+    console.log(`factory: ${factory.address}`);
+  }
 
   const pairAddressx = await factory.getPair(
     inputData.buyingTokenContract,
     inputData.tokenToBuy
   );
 
-  console.log(`pairAddress: ${pairAddressx}`);
-  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `pairAddress: ${pairAddressx}`,
-  ]);
+  if (!buyingAttemptCounter) {
+    console.log(`pairAddress: ${pairAddressx}`);
+  }
 
+  // REFACTOR
   if (pairAddressx !== null && pairAddressx !== undefined) {
     if (pairAddressx.toString().indexOf('0x0000000000000') > -1) {
       window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-        `Liquidity ${pairAddressx} at ${Date.now()} not detected. Auto restart`,
+        `Liquidity at ${new Date().toLocaleTimeString()} not detected. Auto restart`,
       ]);
 
       if (buyingAttemptCounter <= maxAllowedAttempts) {
@@ -201,7 +198,12 @@ const checkLiquidityAndBuy = async (
         processInterval = setTimeout(() => {
           checkLiquidityAndBuy(account, inputData);
         }, 3000);
+      } else {
+        window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+          `TIMEOUT`,
+        ]);
       }
+      return;
     }
   }
 
@@ -248,16 +250,14 @@ const checkLiquidityAndBuy = async (
     );
   }
 
-  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `Done!`,
-  ]);
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [`DONE`]);
 };
 
-//TODO STOP LOOP AFTER SOME TIME
 export const stopPurchaseProcess = () => {
   clearTimeout(processInterval);
 };
 
+// REFACTOR
 export const purchaseToken = async (customerInputData: ICustomerInputData) => {
   // eslint-disable-next-line no-param-reassign
   buyingAttemptCounter = 0;
@@ -300,7 +300,7 @@ export const purchaseToken = async (customerInputData: ICustomerInputData) => {
   try {
     const account = connectToWallet(customerInputData.walletKey);
     window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-      `connected: ${account.address}`,
+      `Wallet: ${account.address}`,
     ]);
 
     await getApproval(

@@ -14,6 +14,7 @@ import { ICustomerInputData } from '../interfaces/CustomerInputData';
 function ConfigurationForm() {
   const [showLogs, setShowLogs] = useState(false);
   const [isFinished, setFinished] = useState(false);
+  const [isTimeout, setTimeout] = useState(false);
   const [logs, writeLogs] = useState<string[]>([]);
   const [inputData, setInputData] = useState<ICustomerInputData>({
     walletAddress: '{walletAddress}',
@@ -48,9 +49,27 @@ function ConfigurationForm() {
     }
   };
 
+  const handleStopButton = async () => {
+    try {
+      window.electron.ipcRenderer.sendMessage(
+        'transmitUserInputToMainProcess',
+        ['STOP']
+      );
+      setShowLogs(false);
+      setFinished(false);
+      setTimeout(false);
+      writeLogs([]);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     const logNewEvent = (event: any, arg: any) => {
-      if (arg[0] === 'Done!') {
+      if (arg[0] === 'TIMEOUT') {
+        setTimeout(true);
+      }
+      if (arg[0] === 'DONE') {
         setFinished(true);
       }
       writeLogs((prevLogs) => [...prevLogs, ...arg]);
@@ -72,12 +91,11 @@ function ConfigurationForm() {
       />
       <LogContainer
         showLogs={showLogs}
-        setShowLogs={setShowLogs}
         isFinished={isFinished}
-        setFinished={setFinished}
+        isTimeout={isTimeout}
         logs={logs}
-        writeLogs={writeLogs}
         buyingToken={inputData.buyingToken}
+        handleStopButton={handleStopButton}
       />
     </div>
   );
