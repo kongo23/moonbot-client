@@ -11,6 +11,7 @@ interface IMainFormProps {
   // eslint-disable-next-line no-unused-vars
   handleInputChange: (inputName: string, value: string) => void;
   handleStartButton: () => void;
+  isDisabledStartBtn: boolean;
 }
 
 function MainForm({
@@ -18,6 +19,7 @@ function MainForm({
   inputData,
   handleInputChange,
   handleStartButton,
+  isDisabledStartBtn,
 }: IMainFormProps) {
   return (
     <div className="mainForm">
@@ -81,7 +83,7 @@ function MainForm({
           className="start-button"
           variant="primary"
           onClick={() => handleStartButton()}
-          disabled={showLogs}
+          disabled={showLogs || isDisabledStartBtn}
         >
           Start Bot <i className="bi bi-rocket-takeoff" />
         </Button>

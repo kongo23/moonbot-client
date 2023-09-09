@@ -23,6 +23,28 @@ function LogContainer({
     handleStopButton();
   };
 
+  const logWithLinks = (log: string) => {
+    // Regular expression to match URLs
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+    // Split the log message by URLs and return an array of text and link elements
+    const parts = log.split(urlRegex).map((part, index) => {
+      if (part.match(urlRegex)) {
+        // If part is a URL, create a clickable link
+        return (
+          // eslint-disable-next-line react/no-array-index-key
+          <a key={index} href={part} target="_blank" rel="noopener noreferrer">
+            link
+          </a>
+        );
+      }
+      // If part is plain text, return it as is
+      return part;
+    });
+
+    return parts;
+  };
+
   return (
     <Alert show={showLogs} variant="primary">
       <div className="d-flex justify-content-between">
@@ -67,7 +89,7 @@ function LogContainer({
       {logs.length > 0 && (
         <ul className="logs-data">
           {logs.map((log) => (
-            <li key={uuidv4()}>{log}</li>
+            <li key={uuidv4()}>{logWithLinks(log)}</li>
           ))}
         </ul>
       )}

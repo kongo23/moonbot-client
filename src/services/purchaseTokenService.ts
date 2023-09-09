@@ -87,6 +87,9 @@ const getApproval = async (
     const amount = ethers.utils.parseUnits(`${approvalAmount}`, 'ether');
     await contract.approve(router.address, amount).catch((err: any) => {
       console.log(err);
+      window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+        err,
+      ]);
     });
   }
 };
@@ -105,31 +108,28 @@ const buyUsingSingleTokenAmount = async (
   const amounOutMin = 0; // doesn't matter using int small value
   const amountInParsed = ethers.utils.parseUnits(`${amountToSpend}`, 'ether');
 
-  // const tx = await router.swapExactETHForTokens(
-  //   amounOutMin,
-  //   [tokenIn, tokenOut],
-  //   walletAddress,
-  //   Date.now() + 1000 * 60 * 5,
-  //   {
-  //     value: amountInParsed,
-  //     gasLimit: 1000000, // Minimum limit is 21000, more much more better.
-  //     gasPrice: ethers.utils.parseUnits('25', 'gwei'), // If you buy early token recommended 15+ GWEI
-  //   }
-  // );
+  const tx = await router.swapExactETHForTokens(
+    amounOutMin,
+    [tokenIn, tokenOut],
+    walletAddress,
+    Date.now() + 1000 * 60 * 5,
+    {
+      value: amountInParsed,
+      gasLimit: 800000, // Minimum limit is 21000, more much more better.
+      gasPrice: ethers.utils.parseUnits('20', 'gwei'), // If you buy early token recommended 15+ GWEI
+    }
+  );
 
   // refactor this
-  // const receipt = await tx.wait();
-  // console.log(
-  //   `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`
-  // );
-  // window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-  //   `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`,
-  // ]);
-  // logs.push(
-  //   `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`
-  // );
-  // return receipt;
-  return '';
+  const receipt = await tx.wait();
+  console.log(
+    `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`
+  );
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+    `Transaction receipt:
+     https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`,
+  ]);
+  return receipt;
 };
 
 // possible EXCESSIVE_INPUT_AMOUNT if amountInMax was not enough
@@ -147,23 +147,27 @@ const buyUsingTokensOutputAmount = async (
 
   const numberOfTokensOut = ethers.utils.parseUnits(numberOfTokensToBuy);
 
-  // const tx = await router.swapETHForExactTokens(
-  //   numberOfTokensOut,
-  //   [tokenIn, tokenOut],
-  //   walletAddress,
-  //   Date.now() + 1000 * 60 * 5,
-  //   {
-  //     value: ethers.utils.parseUnits(`${maxSpendingLimit}`, 'ether'),
-  //     gasLimit: process.env.GAS_LIMIT,
-  //     gasPrice: ethers.utils.parseUnits(`${process.env.GWEI}`, 'gwei'),
-  //   }
-  // );
+  const tx = await router.swapETHForExactTokens(
+    numberOfTokensOut,
+    [tokenIn, tokenOut],
+    walletAddress,
+    Date.now() + 1000 * 60 * 5,
+    {
+      value: ethers.utils.parseUnits(`${maxSpendingLimit}`, 'ether'),
+      gasLimit: 800000, // Minimum limit is 21000, more much more better.
+      gasPrice: ethers.utils.parseUnits('20', 'gwei'), // If you buy early token recommended 15+ GWEI
+    }
+  );
 
-  // const receipt = await tx.wait();
-  // console.log(
-  //   `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`
-  // );
-  // return receipt;
+  const receipt = await tx.wait();
+  console.log(
+    `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`
+  );
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+    `Transaction receipt:
+     https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`,
+  ]);
+  return receipt;
 };
 
 const checkLiquidityAndBuy = async (
@@ -262,19 +266,19 @@ export const purchaseToken = async (customerInputData: ICustomerInputData) => {
   // eslint-disable-next-line no-param-reassign
   buyingAttemptCounter = 0;
 
-  customerInputData = {
-    walletAddress: '0xbaaa950B2b980d9ebBC1300cBAb17A861988A825',
-    walletKey: '',
-    tokenToBuy: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-    provider: 'PancakeSwap',
-    buyingToken: 'BNB',
-    buyingTokenContract: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-    amountToSpend: '',
-    numberOfTokensToBuy: '1001',
-    maxSpendingLimit: '3',
-    usingMaxSlippage: 'true',
-    apiCredits: '100000',
-  };
+  // customerInputData = {
+  //   walletAddress: '0xbaaa950B2b980d9ebBC1300cBAb17A861988A825',
+  //   walletKey: '584a041cd6da7268dc1ebafa6a0949e909987618606a3a08a7525b1c34ac23b2',
+  //   tokenToBuy: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+  //   provider: 'PancakeSwap',
+  //   buyingToken: 'BNB',
+  //   buyingTokenContract: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+  //   amountToSpend: '',
+  //   numberOfTokensToBuy: '1001',
+  //   maxSpendingLimit: '3',
+  //   usingMaxSlippage: 'true',
+  //   apiCredits: '100000',
+  // };
 
   if (shouldBeValidated) {
     const missingProperties = validateInputData(customerInputData);

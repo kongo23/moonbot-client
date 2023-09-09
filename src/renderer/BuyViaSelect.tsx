@@ -36,6 +36,8 @@ function BuyViaSelect({
   return (
     <div className="d-flex">
       <div className="form-group input-group d-flex available-items-list">
+        {' '}
+        Buy with:
         <Dropdown>
           <Dropdown.Toggle
             className="main-button"
@@ -43,7 +45,7 @@ function BuyViaSelect({
             id="dropdown-basic"
             disabled={disabled}
           >
-            {selectedToken || 'Buy with'}
+            {selectedToken || 'Select'}
           </Dropdown.Toggle>
           <Dropdown.Menu>
             {buyingTokens.map((token) => (

@@ -36,6 +36,10 @@ h1{
   text-align: center;
 }
 
+ul{
+  margin-bottom: 0;
+}
+
 .title{
   font-family: 'Trebuchet MS';
   font-weight: 800;
@@ -126,6 +130,11 @@ button {
   margin-left:0.5em;
 }
 
+.main-button
+{
+  margin-left:0.5em;
+}
+
 .buy-via-block{
   margin-bottom: 0.5em;
 }
@@ -165,7 +174,6 @@ a {
   text-decoration: none;
   height: fit-content;
   width: fit-content;
-  margin: 10px;
 }
 
 a:hover {

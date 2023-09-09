@@ -17,12 +17,12 @@ function ConfigurationForm() {
   const [isTimeout, setTimeout] = useState(false);
   const [logs, writeLogs] = useState<string[]>([]);
   const [inputData, setInputData] = useState<ICustomerInputData>({
-    walletAddress: '{walletAddress}',
-    walletKey: '{walletKey}',
-    tokenToBuy: '{tokenToBuy}',
+    walletAddress: '',
+    walletKey: '',
+    tokenToBuy: '',
     provider: 'PancakeSwap',
-    buyingToken: '{token}',
-    buyingTokenContract: '{buyingTokenContract}',
+    buyingToken: '',
+    buyingTokenContract: '',
     amountToSpend: '',
     numberOfTokensToBuy: '',
     maxSpendingLimit: '',
@@ -88,6 +88,15 @@ function ConfigurationForm() {
         inputData={inputData}
         handleInputChange={handleInputChange}
         handleStartButton={handleStartButton}
+        isDisabledStartBtn={
+          inputData.walletAddress === '' ||
+          inputData.walletKey === '' ||
+          inputData.tokenToBuy === '' ||
+          inputData.buyingToken === '' ||
+          (inputData.amountToSpend === '' &&
+            (inputData.numberOfTokensToBuy === '' ||
+              inputData.maxSpendingLimit === ''))
+        }
       />
       <LogContainer
         showLogs={showLogs}

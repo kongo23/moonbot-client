@@ -25,14 +25,16 @@ function BuyingTypeInput({
   ) {
     handleInputChange('amountToSpend', amountToSpendParam);
     handleInputChange('numberOfTokensToBuy', numberOfTokensToBuyParam);
-    // managing values cleaning up
+    // managing values cleaning up for switch visualization
     setAmountToSpendInputValue(amountToSpendParam);
     setNumberOfTokensToBuyInputValue(numberOfTokensToBuyParam);
   }
 
   function handleRadioChange(event: ChangeEvent<HTMLInputElement>) {
     setBuyMaxAmount(event.target.id === 'max-amount');
+    // cleanup
     handleTypeOfHowToBuyTokens('', '');
+    handleInputChange('maxSpendingLimit', '');
   }
 
   return (
@@ -94,7 +96,7 @@ function BuyingTypeInput({
                 </span>
               </div>
               <Form.Control
-                placeholder={`Max spending limit in ${selectedCurrency} - tx will fail if exceeds`}
+                placeholder={`Spending limit in ${selectedCurrency} (for max: put ~5% less than you have)`}
                 disabled={disabled}
                 onChange={(e) =>
                   handleInputChange('maxSpendingLimit', e.target.value)
