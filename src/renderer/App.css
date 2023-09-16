@@ -49,6 +49,10 @@ ul{
   min-width: 500px;
 }
 
+.icon{
+  margin-right: 10px;
+}
+
 .input-icon{
   border-top-left-radius: 0.375rem;
   border-bottom-left-radius: 0.375rem;

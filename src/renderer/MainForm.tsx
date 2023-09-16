@@ -4,6 +4,7 @@ import SwapProviderSelect from './SwapProviderSelect';
 import BuyViaSelect from './BuyViaSelect';
 import BuyingTypeInput from './BuyingTypeInput';
 import DefaultInfoInput from './DefaultInfoInput';
+import icon from '../../assets/32x32.png';
 
 interface IMainFormProps {
   showLogs: boolean;
@@ -27,7 +28,8 @@ function MainForm({
         <div className="d-flex justify-content-between">
           <div className="d-flex justify-content-start">
             <h1 className="title">
-              MoonBot <i className="bi bi-moon" />
+              <img src={icon} alt="Icon" className="icon" />
+              MoonBot
             </h1>
           </div>
           <div className="d-flex justify-content-end select-top-buttons">
