@@ -104,19 +104,30 @@ const buyUsingSingleTokenAmount = async (
   window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `Buying max amount of token(s)`,
   ]);
-
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+    `amountToSpend: ${amountToSpend}`,
+  ]);
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+    `tokenIn: ${tokenIn}`,
+  ]);
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+    `tokenIn: ${tokenOut}`,
+  ]);
   const amounOutMin = 0; // doesn't matter using int small value
   const amountInParsed = ethers.utils.parseUnits(`${amountToSpend}`, 'ether');
+  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+    `amountInParsed: ${amountInParsed}`,
+  ]);
 
-  const tx = await router.swapExactETHForTokens(
+  const tx = await router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+    amountInParsed,
     amounOutMin,
     [tokenIn, tokenOut],
     walletAddress,
     Date.now() + 1000 * 60 * 5,
     {
-      value: amountInParsed,
       gasLimit: 800000, // Minimum limit is 21000, more much more better.
-      gasPrice: ethers.utils.parseUnits('20', 'gwei'), // If you buy early token recommended 15+ GWEI
+      gasPrice: ethers.utils.parseUnits('30', 'gwei'), // If you buy early token recommended 15+ GWEI
     }
   );
 
@@ -146,16 +157,17 @@ const buyUsingTokensOutputAmount = async (
   ]);
 
   const numberOfTokensOut = ethers.utils.parseUnits(numberOfTokensToBuy);
+  const maxAmountIn = ethers.utils.parseUnits(`${maxSpendingLimit}`, 'ether');
 
-  const tx = await router.swapETHForExactTokens(
+  const tx = await router.swapTokensForExactTokens(
     numberOfTokensOut,
+    maxAmountIn,
     [tokenIn, tokenOut],
     walletAddress,
     Date.now() + 1000 * 60 * 5,
     {
-      value: ethers.utils.parseUnits(`${maxSpendingLimit}`, 'ether'),
       gasLimit: 800000, // Minimum limit is 21000, more much more better.
-      gasPrice: ethers.utils.parseUnits('20', 'gwei'), // If you buy early token recommended 15+ GWEI
+      gasPrice: ethers.utils.parseUnits('30', 'gwei'), // If you buy early token recommended 15+ GWEI
     }
   );
 
@@ -268,7 +280,7 @@ export const purchaseToken = async (customerInputData: ICustomerInputData) => {
 
   // customerInputData = {
   //   walletAddress: '0xbaaa950B2b980d9ebBC1300cBAb17A861988A825',
-  //   walletKey: '584a041cd6da7268dc1ebafa6a0949e909987618606a3a08a7525b1c34ac23b2',
+  //   walletKey: '',
   //   tokenToBuy: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
   //   provider: 'PancakeSwap',
   //   buyingToken: 'BNB',
