@@ -64,6 +64,11 @@ ul{
   width:inherit;
 }
 
+.dropdown-item:hover{
+  border-radius: 0.375rem;
+}
+
+
 .dropdown-menu{
   --bs-dropdown-padding-y: inherit;
 }
