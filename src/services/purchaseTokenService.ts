@@ -78,19 +78,28 @@ const getApproval = async (
 
   console.log(`parseVal: ${parseVal}`);
 
-  if (parseFloat(parseVal) === 0) {
+  if (parseFloat(parseVal) !== approvalAmount) {
     console.log(`Getting approval`);
     window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
       `Getting approval`,
     ]);
 
-    const amount = ethers.utils.parseUnits(`${approvalAmount}`, 'ether');
-    await contract.approve(router.address, amount).catch((err: any) => {
-      console.log(err);
-      window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-        err,
-      ]);
-    });
+    const parsedApprovalAmount = ethers.utils.parseUnits(
+      `${approvalAmount}`,
+      'ether'
+    );
+
+    await contract
+      .approve(router.address, parsedApprovalAmount)
+      .catch((err: any) => {
+        window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+          err,
+        ]);
+      });
+  } else {
+    window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+      `Approval is not required`,
+    ]);
   }
 };
 
@@ -113,7 +122,7 @@ const buyUsingSingleTokenAmount = async (
   window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `tokenIn: ${tokenOut}`,
   ]);
-  const amounOutMin = 0; // doesn't matter using int small value
+  const amounOutMin = 0; // doesn't matter using int small value (i.e max slippage)
   const amountInParsed = ethers.utils.parseUnits(`${amountToSpend}`, 'ether');
   window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `amountInParsed: ${amountInParsed}`,
