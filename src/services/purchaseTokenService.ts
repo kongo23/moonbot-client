@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import abi from 'human-standard-token-abi';
 import {
   connectToWallet,
@@ -106,6 +106,7 @@ const getApproval = async (
 const buyUsingSingleTokenAmount = async (
   router: ethers.Contract,
   amountToSpend: string,
+  tokenInName: string,
   tokenIn: string,
   tokenOut: string,
   walletAddress: string
@@ -120,7 +121,7 @@ const buyUsingSingleTokenAmount = async (
     `tokenIn: ${tokenIn}`,
   ]);
   window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `tokenIn: ${tokenOut}`,
+    `tokenOut: ${tokenOut}`,
   ]);
   const amounOutMin = 0; // doesn't matter using int small value (i.e max slippage)
   const amountInParsed = ethers.utils.parseUnits(`${amountToSpend}`, 'ether');
@@ -128,17 +129,32 @@ const buyUsingSingleTokenAmount = async (
     `amountInParsed: ${amountInParsed}`,
   ]);
 
-  const tx = await router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-    amountInParsed,
-    amounOutMin,
-    [tokenIn, tokenOut],
-    walletAddress,
-    Date.now() + 1000 * 60 * 5,
-    {
-      gasLimit: 800000, // Minimum limit is 21000, more much more better.
-      gasPrice: ethers.utils.parseUnits('30', 'gwei'), // If you buy early token recommended 15+ GWEI
-    }
-  );
+  let tx;
+  if (tokenInName.toLocaleLowerCase() === 'bnb') {
+    tx = await router.swapExactETHForTokensSupportingFeeOnTransferTokens(
+      amounOutMin,
+      [tokenIn, tokenOut],
+      walletAddress,
+      Date.now() + 1000 * 60 * 5,
+      {
+        value: amountInParsed,
+        gasLimit: 1000000, // Minimum limit is 21000, more much more better.
+        gasPrice: ethers.utils.parseUnits('25', 'gwei'), // If you buy early token recommended 15+ GWEI
+      }
+    );
+  } else {
+    tx = await router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+      amountInParsed,
+      amounOutMin,
+      [tokenIn, tokenOut],
+      walletAddress,
+      Date.now() + 1000 * 60 * 5,
+      {
+        gasLimit: 1000000, // Minimum limit is 21000, more much more better.
+        gasPrice: ethers.utils.parseUnits('35', 'gwei'), // If you buy early token recommended 15+ GWEI
+      }
+    );
+  }
 
   // refactor this
   const receipt = await tx.wait();
@@ -147,7 +163,7 @@ const buyUsingSingleTokenAmount = async (
   );
   window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `Transaction receipt:
-     https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`,
+         https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`,
   ]);
   return receipt;
 };
@@ -157,6 +173,7 @@ const buyUsingTokensOutputAmount = async (
   router: ethers.Contract,
   numberOfTokensToBuy: string,
   maxSpendingLimit: string,
+  tokenInName: string,
   tokenIn: string,
   tokenOut: string,
   walletAddress: string
@@ -168,25 +185,41 @@ const buyUsingTokensOutputAmount = async (
   const numberOfTokensOut = ethers.utils.parseUnits(numberOfTokensToBuy);
   const maxAmountIn = ethers.utils.parseUnits(`${maxSpendingLimit}`, 'ether');
 
-  const tx = await router.swapTokensForExactTokens(
-    numberOfTokensOut,
-    maxAmountIn,
-    [tokenIn, tokenOut],
-    walletAddress,
-    Date.now() + 1000 * 60 * 5,
-    {
-      gasLimit: 800000, // Minimum limit is 21000, more much more better.
-      gasPrice: ethers.utils.parseUnits('30', 'gwei'), // If you buy early token recommended 15+ GWEI
-    }
-  );
+  let tx;
+  if (tokenInName.toLocaleLowerCase() === 'bnb') {
+    tx = await router.swapETHForExactTokens(
+      numberOfTokensOut,
+      [tokenIn, tokenOut],
+      walletAddress,
+      Date.now() + 1000 * 60 * 5,
+      {
+        value: maxAmountIn,
+        gasLimit: 1000000, // Minimum limit is 21000, more much more better.
+        gasPrice: ethers.utils.parseUnits('35', 'gwei'), // If you buy early token recommended 15+ GWEI
+      }
+    );
+  } else {
+    tx = await router.swapTokensForExactTokens(
+      numberOfTokensOut,
+      maxAmountIn,
+      [tokenIn, tokenOut],
+      walletAddress,
+      Date.now() + 1000 * 60 * 5,
+      {
+        gasLimit: 1000000, // Minimum limit is 21000, more much more better.
+        gasPrice: ethers.utils.parseUnits('35', 'gwei'), // If you buy early token recommended 15+ GWEI
+      }
+    );
+  }
 
+  // refactor this
   const receipt = await tx.wait();
   console.log(
     `Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`
   );
   window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
     `Transaction receipt:
-     https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`,
+         https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`,
   ]);
   return receipt;
 };
@@ -260,6 +293,7 @@ const checkLiquidityAndBuy = async (
     await buyUsingSingleTokenAmount(
       router,
       inputData.amountToSpend,
+      inputData.buyingToken,
       inputData.buyingTokenContract,
       inputData.tokenToBuy,
       inputData.walletAddress
@@ -269,6 +303,7 @@ const checkLiquidityAndBuy = async (
       router,
       inputData.numberOfTokensToBuy,
       inputData.maxSpendingLimit,
+      inputData.buyingToken,
       inputData.buyingTokenContract,
       inputData.tokenToBuy,
       inputData.walletAddress
@@ -289,7 +324,7 @@ export const purchaseToken = async (customerInputData: ICustomerInputData) => {
 
   // customerInputData = {
   //   walletAddress: '0xbaaa950B2b980d9ebBC1300cBAb17A861988A825',
-  //   walletKey: '',
+  //   walletKey: '584a041cd6da7268dc1ebafa6a0949e909987618606a3a08a7525b1c34ac23b2',
   //   tokenToBuy: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
   //   provider: 'PancakeSwap',
   //   buyingToken: 'BNB',
@@ -333,6 +368,7 @@ export const purchaseToken = async (customerInputData: ICustomerInputData) => {
       account,
       Number.MAX_SAFE_INTEGER
     );
+
     await checkLiquidityAndBuy(account, customerInputData);
   } catch (error) {
     window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
