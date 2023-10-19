@@ -21,6 +21,7 @@ function ConfigurationForm() {
     walletKey: '',
     tokenToBuy: '',
     provider: 'PancakeSwap',
+    nodeAddr: '',
     buyingToken: '',
     buyingTokenContract: '',
     amountToSpend: '',

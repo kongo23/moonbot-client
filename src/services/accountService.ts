@@ -1,11 +1,18 @@
 import { ethers } from 'ethers';
 
-export const connectToWallet = (mnemonic: string) => {
-  const provider = new ethers.providers.WebSocketProvider(
-    'wss://little-falling-mansion.bsc.discover.quiknode.pro/000fddbafcb7c6ac336639fd0d1a84b68fe66212/'
-  );
+export const connectToWallet = (mnemonic: string, nodeAddr: string) => {
+  let nodeProvider: ethers.providers.WebSocketProvider;
+
+  if (!nodeAddr) {
+    nodeProvider = new ethers.providers.WebSocketProvider(
+      'wss://little-falling-mansion.bsc.discover.quiknode.pro/000fddbafcb7c6ac336639fd0d1a84b68fe66212/'
+    );
+  } else {
+    nodeProvider = new ethers.providers.WebSocketProvider(nodeAddr);
+  }
+
   const wallet = new ethers.Wallet(mnemonic);
-  return wallet.connect(provider);
+  return wallet.connect(nodeProvider);
 };
 
 // PancakeSwap V2 factory

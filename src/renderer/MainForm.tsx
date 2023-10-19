@@ -1,5 +1,6 @@
 import { ICustomerInputData } from 'interfaces/CustomerInputData';
 import { Button } from 'react-bootstrap';
+import { useRef, useEffect } from 'react';
 import SwapProviderSelect from './SwapProviderSelect';
 import BuyViaSelect from './BuyViaSelect';
 import BuyingTypeInput from './BuyingTypeInput';
@@ -29,7 +30,7 @@ function MainForm({
           <div className="d-flex justify-content-start">
             <h1 className="title">
               <img src={icon} alt="Icon" className="icon" />
-              MoonBot
+              <span>MoonBot</span>
             </h1>
           </div>
           <div className="d-flex justify-content-end select-top-buttons">
@@ -41,8 +42,14 @@ function MainForm({
                   value: 'Fastest Node',
                   icon: 'bi bi-lightning-charge',
                 },
+                {
+                  id: 'custom',
+                  value: 'Other Node',
+                  icon: '',
+                },
               ]}
               handleInputChange={handleInputChange}
+              id="nodeAddr"
             />
             <SwapProviderSelect
               disabled={showLogs}
@@ -54,6 +61,7 @@ function MainForm({
                 },
               ]}
               handleInputChange={handleInputChange}
+              id="provider"
             />
           </div>
         </div>

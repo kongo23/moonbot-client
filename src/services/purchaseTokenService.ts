@@ -111,23 +111,8 @@ const buyUsingSingleTokenAmount = async (
   tokenOut: string,
   walletAddress: string
 ) => {
-  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `Buying max amount of token(s)`,
-  ]);
-  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `amountToSpend: ${amountToSpend}`,
-  ]);
-  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `tokenIn: ${tokenIn}`,
-  ]);
-  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `tokenOut: ${tokenOut}`,
-  ]);
   const amounOutMin = 0; // doesn't matter using int small value (i.e max slippage)
   const amountInParsed = ethers.utils.parseUnits(`${amountToSpend}`, 'ether');
-  window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
-    `amountInParsed: ${amountInParsed}`,
-  ]);
 
   let tx;
   if (tokenInName.toLocaleLowerCase() === 'bnb') {
@@ -357,8 +342,22 @@ export const purchaseToken = async (customerInputData: ICustomerInputData) => {
     ]);
   }
 
+  if (!customerInputData.nodeAddr) {
+    window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+      `Using premium node 🗲`,
+    ]);
+  } else {
+    window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
+      `Using custom node address: ${customerInputData.nodeAddr}`,
+    ]);
+  }
+
   try {
-    const account = connectToWallet(customerInputData.walletKey);
+    const account = connectToWallet(
+      customerInputData.walletKey,
+      customerInputData.nodeAddr
+    );
+
     window.electron.ipcRenderer.sendMessage('transmitLogToMainProcess', [
       `Wallet: ${account.address}`,
     ]);

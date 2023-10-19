@@ -3,6 +3,7 @@ export interface ICustomerInputData {
   walletKey: string;
   tokenToBuy: string;
   provider: string;
+  nodeAddr: string;
   buyingToken: string;
   buyingTokenContract: string;
   amountToSpend: string;
