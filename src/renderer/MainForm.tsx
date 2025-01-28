@@ -1,6 +1,5 @@
 import { ICustomerInputData } from 'interfaces/CustomerInputData';
 import { Button } from 'react-bootstrap';
-import { useRef, useEffect } from 'react';
 import SwapProviderSelect from './SwapProviderSelect';
 import BuyViaSelect from './BuyViaSelect';
 import BuyingTypeInput from './BuyingTypeInput';
@@ -39,7 +38,7 @@ function MainForm({
               availableData={[
                 {
                   id: 'premNode',
-                  value: 'Fastest Node',
+                  value: 'Premium Node',
                   icon: 'bi bi-lightning-charge',
                 },
                 {
@@ -81,7 +80,7 @@ function MainForm({
               disabled={showLogs}
               handleInputChange={handleInputChange}
             /> */}
-            <i className="advanceSettings">Advanced settings coming soon!</i>
+            <span className="advanceSettings">Advanced settings </span> <span> &#160; &#9660;</span>
           </div>
         </div>
         <BuyingTypeInput

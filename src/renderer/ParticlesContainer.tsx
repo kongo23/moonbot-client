@@ -18,6 +18,7 @@ class ParticlesContainer extends React.PureComponent<IProps> {
       background: { opacity: 0 },
       smooth: true,
       fpsLimit: 60,
+      zLayers: 1,
     };
 
     return <Particles options={options} init={this.customInit} />;

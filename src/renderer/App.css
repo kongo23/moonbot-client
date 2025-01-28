@@ -54,7 +54,7 @@ ul{
 }
 
 .node-input{
-  max-width: 150px;
+  max-width: 165px;
   margin-left: 10px;
 }
 
@@ -87,10 +87,11 @@ ul{
   align-items: center;
 }
 
-/* .advanceSettings{
+.advanceSettings{
   color:white;
+  text-decoration: underline;
 }
-
+/*
 .advanceSettings span{
   text-decoration: underline;
 } */

@@ -68,7 +68,11 @@ function BuyingTypeInput({
               </span>
             </div>
             <Form.Control
-              placeholder={`Amount to spend in ${selectedCurrency} e.g (0.5, 1, 10 etc.)`}
+              placeholder={
+                selectedCurrency
+                  ? `Amount to spend in ${selectedCurrency} e.g (0.5, 1, 10 etc.)`
+                  : `Please select a buying token`
+              }
               disabled={disabled}
               onChange={(e) => handleTypeOfHowToBuyTokens(e.target.value, '')}
               value={amountToSpendValue}
@@ -96,7 +100,7 @@ function BuyingTypeInput({
                 </span>
               </div>
               <Form.Control
-                placeholder={`Spending limit in ${selectedCurrency} (for max: put ~5% less than you have)`}
+                placeholder={`Spending limit in ${selectedCurrency} e.g (0.5, 1, 10 etc.)`}
                 disabled={disabled}
                 onChange={(e) =>
                   handleInputChange('maxSpendingLimit', e.target.value)

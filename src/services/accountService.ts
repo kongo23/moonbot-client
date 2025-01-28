@@ -5,7 +5,7 @@ export const connectToWallet = (mnemonic: string, nodeAddr: string) => {
 
   if (!nodeAddr) {
     nodeProvider = new ethers.providers.WebSocketProvider(
-      'wss://little-falling-mansion.bsc.discover.quiknode.pro/000fddbafcb7c6ac336639fd0d1a84b68fe66212/'
+      'wss://little-falling-mansion.bsc.discover.quiknode.pro/id/'
     );
   } else {
     nodeProvider = new ethers.providers.WebSocketProvider(nodeAddr);
