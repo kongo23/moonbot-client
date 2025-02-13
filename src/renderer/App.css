@@ -1,0 +1,214 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+body {
+  position: relative;
+  color: white;
+  height: 100vh;
+  background: linear-gradient(-45deg,#253d55, #4c226d, #363172, #012141);
+  background-size: 300% 300%;
+  animation: gradient 15s ease infinite;
+  font-family: Segoe UI;
+  overflow-y: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+form{
+  display: flex;
+}
+
+h1{
+  text-align: center;
+}
+
+ul{
+  margin-bottom: 0;
+}
+
+.title{
+  font-family: 'Trebuchet MS';
+  font-weight: 800;
+}
+
+.container{
+  min-width: 500px;
+}
+
+.icon{
+  margin-right: 10px;
+}
+
+.node-input{
+  max-width: 165px;
+  margin-left: 10px;
+}
+
+.input-icon{
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.dropdown-item{
+  width:inherit;
+}
+
+.dropdown-item:hover{
+  border-radius: 0.375rem;
+}
+
+
+.dropdown-menu{
+  --bs-dropdown-padding-y: inherit;
+}
+.slippage{
+  margin-top: 0.3em;
+}
+
+.available-items-list{
+  text-align: center;
+  margin-right: 1em;
+  align-items: center;
+}
+
+.advanceSettings{
+  color:white;
+  text-decoration: underline;
+}
+/*
+.advanceSettings span{
+  text-decoration: underline;
+} */
+.advanced-settings{
+  align-items: center;
+}
+
+.alert {
+  overflow-y: scroll;
+  max-height: 350px;
+  max-width: 520px;
+  word-wrap: break-word;
+}
+
+.logsHeader{
+  margin-bottom: 1em;
+}
+
+.spinner{
+  vertical-align: top;
+}
+
+.checkmark{
+  color:green;
+}
+
+button {
+  /* background-color: #52072c; */
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  appearance: none;
+  font-size: 1.3rem;
+  box-shadow: 0px 8px 28px -6px rgba(24, 39, 75, 0.12),
+    0px 18px 88px -4px rgba(24, 39, 75, 0.14);
+  transition: all ease-in 0.1s;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.start-button{
+  margin-top: 0.5em;
+  /* margin-bottom: 0.5em; */
+}
+
+.select-top-buttons{
+  align-self: center;
+}
+
+.main-button-top
+{
+  margin-left:0.5em;
+}
+
+.main-button
+{
+  margin-left:0.5em;
+}
+
+.buy-via-block{
+  margin-bottom: 0.5em;
+}
+.buying-settings-block{
+  margin-top: 0.2em;
+}
+.buying-settings-block-options{
+  margin-bottom:0.25em;
+}
+/* .main-button:hover,
+.main-button:active:hover,
+.main-button:focus,
+{
+  background-color: #3b0621 ;
+} */
+
+button:hover {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+/* .form-check-input,
+.form-check-input:checked{
+  background-color: #52072c;
+  border-color:#3b0621;
+} */
+
+.form-check-input:focus{
+  box-shadow: none;
+}
+
+.logs-data{
+  font-family: ui-monospace;
+}
+
+a {
+  text-decoration: none;
+  height: fit-content;
+  width: fit-content;
+}
+
+a:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+.Hello {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+/* .bg-icon{
+  position: fixed;
+    right: 0;
+    top: 0rem;
+    font-size: 40rem;
+    opacity: 0.05;
+    z-index: -1;
+} */
