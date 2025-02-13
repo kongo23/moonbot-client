@@ -3,3 +3,4 @@ DEX(BNB) desktop app bot to snipe tokens on tokens launch, made on Electron + Re
 -bloackchain access is used via quiknode
 
 Not refactored
+![Uploading app-main.gif…]()
